@@ -6,7 +6,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
 import { ProgressIndicator } from '../components/ProgressIndicator';
-import { generateId, saveProfile } from '../services/storage';
+import {
+  clearOnboardingProgress,
+  generateId,
+  getCurrentUserEmail,
+  saveProfile,
+} from '../services/storage';
 import {
   ACTIVITY_LABELS,
   HEALTH_CONDITION_LABELS,
@@ -61,9 +66,10 @@ export function ProfileSummaryScreen() {
   const handleStart = async () => {
     setSaving(true);
     try {
+      const currentEmail = await getCurrentUserEmail();
       await saveProfile({
         id: generateId(),
-        email: 'user@bigben.app', // Will come from auth in production
+        email: currentEmail ?? 'user@mealwise.app',
         age,
         gender,
         heightCm,
@@ -76,6 +82,7 @@ export function ProfileSummaryScreen() {
         tdee: metrics.tdee,
         createdAt: new Date().toISOString(),
       });
+      await clearOnboardingProgress();
       navigation.reset({
         index: 0,
         routes: [{ name: 'Home' }],
@@ -231,13 +238,13 @@ const styles = StyleSheet.create({
   note: {
     fontSize: 12,
     color: colors.gray,
-    fontStyle: 'italic',
+    fontStyle: 'normal',
     marginTop: spacing.sm,
   },
   emptyText: {
     fontSize: 15,
     color: colors.gray,
-    fontStyle: 'italic',
+    fontStyle: 'normal',
   },
   conditionItem: {
     flexDirection: 'row',

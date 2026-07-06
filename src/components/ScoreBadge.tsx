@@ -65,6 +65,6 @@ const styles = StyleSheet.create({
   label: {
     fontWeight: '500',
     textTransform: 'uppercase',
-    letterSpacing: 0.3,
+    letterSpacing: 0,
   },
 });

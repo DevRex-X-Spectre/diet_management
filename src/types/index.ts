@@ -1,5 +1,5 @@
 /**
- * BigBen Type Definitions
+ * MealWise Type Definitions
  *
  * Central type definitions for the patient profile,
  * recommendation engine, and onboarding flow.

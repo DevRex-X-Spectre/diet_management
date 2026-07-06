@@ -1,0 +1,48 @@
+# Food Image Attributions
+
+Most food images below were downloaded from Wikimedia Commons search results for the matching food name. A few foods use close local fallbacks from the same Commons-sourced asset set where an exact reusable photo was unavailable or the network request failed: `agege-bread`, `banga-soup`, `egusi-soup`, `efo-riro`, `grilled-turkey`, `pumpkin-leaves-ugwu`, and `ugu-leaves`.
+
+- grilled-tilapia: File:Grilled tilapia with banku.jpg (CC BY 2.0) by sshreeves. Source: https://commons.wikimedia.org/wiki/File:Grilled_tilapia_with_banku.jpg
+- boiled-eggs: File:Boiled Egg - Crossection.jpg (CC BY-SA 2.0) by Ramesh NG. Source: https://commons.wikimedia.org/wiki/File:Boiled_Egg_-_Crossection.jpg
+- grilled-chicken: File:Pesto Chicken and Grilled Zucchini.jpg (CC BY-SA 4.0) by Infrogmation of New Orleans. Source: https://commons.wikimedia.org/wiki/File:Pesto_Chicken_and_Grilled_Zucchini.jpg
+- moi-moi: File:MoinMoin London.jpg (CC BY-SA 3.0) by Secretlondon. Source: https://commons.wikimedia.org/wiki/File:MoinMoin_London.jpg
+- boiled-beans: File:Grilled centipede poster.jpg (CC BY 2.0) by Oskari Kettunen from Helsinki, Finland. Source: https://commons.wikimedia.org/wiki/File:Grilled_centipede_poster.jpg
+- egusi-soup: File:EGUSI UNSHELLED.JPG (CC BY-SA 3.0) by Zz411 at English Wikipedia. Source: https://commons.wikimedia.org/wiki/File:EGUSI_UNSHELLED.JPG
+- catfish-pepper-soup: File:Catfish soup a delicious and widely accepted dish amongst all classes of Nigerians.jpg (CC BY-SA 4.0) by Zend2020. Source: https://commons.wikimedia.org/wiki/File:Catfish_soup_a_delicious_and_widely_accepted_dish_amongst_all_classes_of_Nigerians.jpg
+- fish-stew: File:Couscous with fish stew and vegetables.jpg (CC BY-SA 4.0) by Suleiman213. Source: https://commons.wikimedia.org/wiki/File:Couscous_with_fish_stew_and_vegetables.jpg
+- okpa: File:Bambara nut pudding.jpg (CC BY-SA 4.0) by Bukky658. Source: https://commons.wikimedia.org/wiki/File:Bambara_nut_pudding.jpg
+- akara: File:Fried Bean cake.jpg (CC BY-SA 4.0) by Zmu'az4Z. Source: https://commons.wikimedia.org/wiki/File:Fried_Bean_cake.jpg
+- chicken-suya: File:Chicken Grills (Suya) in Northern Nigeria (8).jpg (CC BY-SA 4.0) by Zarerh. Source: https://commons.wikimedia.org/wiki/File:Chicken_Grills_(Suya)_in_Northern_Nigeria_(8).jpg
+- grilled-turkey: File:Kaburga a la parrilla.jpg (CC BY-SA 4.0) by E4024. Source: https://commons.wikimedia.org/wiki/File:Kaburga_a_la_parrilla.jpg
+- waterleaf: File:A woman trading vegetables.jpg (CC BY-SA 4.0) by Abanda bride. Source: https://commons.wikimedia.org/wiki/File:A_woman_trading_vegetables.jpg
+- okra: File:Okra (Abelmoschus esculentus) Feb 2019. DSC 0060 01.jpg (CC BY-SA 4.0) by ADARSHluck. Source: https://commons.wikimedia.org/wiki/File:Okra_(Abelmoschus_esculentus)_Feb_2019._DSC_0060_01.jpg
+- bitter-leaf: File:Green leafy vegetable.jpg (CC BY-SA 3.0) by ProjectManhattan. Source: https://commons.wikimedia.org/wiki/File:Green_leafy_vegetable.jpg
+- soko: File:Celosia argentea at AVRDC.JPG (CC BY-SA 3.0) by Michael Hermann. Source: https://commons.wikimedia.org/wiki/File:Celosia_argentea_at_AVRDC.JPG
+- pumpkin-leaves-ugwu: File:Rabbit in a pumpkin patch - P1100065.jpg (CC BY 4.0) by User:Vmenkov. Source: https://commons.wikimedia.org/wiki/File:Rabbit_in_a_pumpkin_patch_-_P1100065.jpg
+- garden-egg-leaves: File:Green leafy vegetable.jpg (CC BY-SA 3.0) by ProjectManhattan. Source: https://commons.wikimedia.org/wiki/File:Green_leafy_vegetable.jpg
+- brown-rice: File:Duddleswell cheese with brown basmati rice.JPG (CC BY-SA 3.0) by Zigzig20s. Source: https://commons.wikimedia.org/wiki/File:Duddleswell_cheese_with_brown_basmati_rice.JPG
+- ofada-rice: File:Ofada Rice.jpg (CC BY-SA 4.0) by Ijeoma. Source: https://commons.wikimedia.org/wiki/File:Ofada_Rice.jpg
+- unripe-plantain: File:Unripe plantain porridge.jpg (CC BY-SA 4.0) by Nancy Nwachukwu. Source: https://commons.wikimedia.org/wiki/File:Unripe_plantain_porridge.jpg
+- oats: File:Steel Cut Oats 008 A.jpg (Public domain) by Spunkybart at English Wikipedia. Source: https://commons.wikimedia.org/wiki/File:Steel_Cut_Oats_008_A.jpg
+- semovita: File:Griessbrei.jpg (CC BY-SA 3.0) by Alice Wiegand. Source: https://commons.wikimedia.org/wiki/File:Griessbrei.jpg
+- whole-wheat-bread: File:Rye and whole wheat bread, September 2009.jpg (CC BY-SA 2.0) by Dave Bonta. Source: https://commons.wikimedia.org/wiki/File:Rye_and_whole_wheat_bread,_September_2009.jpg
+- pounded-yam: File:Pounded Yam and Egusi Soup.jpg (CC BY-SA 4.0) by Justdifference. Source: https://commons.wikimedia.org/wiki/File:Pounded_Yam_and_Egusi_Soup.jpg
+- amala: File:Amala ati Ewedu and Ogunfe.png (CC BY-SA 4.0) by Jostbrain. Source: https://commons.wikimedia.org/wiki/File:Amala_ati_Ewedu_and_Ogunfe.png
+- eba: File:Eba served with Fresh fish banga soup in a clay pot.jpg (CC BY-SA 4.0) by Justdifference. Source: https://commons.wikimedia.org/wiki/File:Eba_served_with_Fresh_fish_banga_soup_in_a_clay_pot.jpg
+- apple: File:Santa Maria de Huerta Almacen.jpg (CC BY-SA 3.0) by Willtron. Source: https://commons.wikimedia.org/wiki/File:Santa_Maria_de_Huerta_Almacen.jpg
+- watermelon: File:Taiwan 2009 Tainan City Organic Farm Watermelon FRD 7962.jpg (CC BY-SA 3.0) by Fred Hsu (Wikipedia:User:Fred Hsu on en.wikipedia). Source: https://commons.wikimedia.org/wiki/File:Taiwan_2009_Tainan_City_Organic_Farm_Watermelon_FRD_7962.jpg
+- pawpaw: File:Papaya raindrop.jpg (CC BY-SA 2.5) by Muhammad Mahdi Karim. Source: https://commons.wikimedia.org/wiki/File:Papaya_raindrop.jpg
+- orange: File:Ambersweet oranges.jpg (Public domain) by See source. Source: https://commons.wikimedia.org/wiki/File:Ambersweet_oranges.jpg
+- banana: File:Kadalikkula.JPG (CC BY 2.5) by Noblevmy at Malayalam Wikipedia. Source: https://commons.wikimedia.org/wiki/File:Kadalikkula.JPG
+- avocado: File:Avocado11.jpg (CC BY 3.0) by Dalibor Bosits. Source: https://commons.wikimedia.org/wiki/File:Avocado11.jpg
+- greek-yogurt: File:Hangop bord.jpg (CC BY-SA 3.0) by Kliek. Source: https://commons.wikimedia.org/wiki/File:Hangop_bord.jpg
+- low-fat-milk: File:Bowl milk glass.jpg (CC BY-SA 3.0) by Manfred Heyde. Source: https://commons.wikimedia.org/wiki/File:Bowl_milk_glass.jpg
+- tiger-nuts: File:Tiger nuts (Brown).jpg (CC BY-SA 4.0) by Flixtey. Source: https://commons.wikimedia.org/wiki/File:Tiger_nuts_(Brown).jpg
+- ogbono-soup: File:Okro and Ogbono Soup.jpg (CC BY-SA 4.0) by Viruzlex. Source: https://commons.wikimedia.org/wiki/File:Okro_and_Ogbono_Soup.jpg
+- okra-soup: File:Okro soup.jpg (CC BY-SA 4.0) by Bukky658. Source: https://commons.wikimedia.org/wiki/File:Okro_soup.jpg
+- vegetable-soup: File:Vegetable Soup with diced Beef.jpg (CC BY-SA 4.0) by Chinedum 'nedJamez' Okerengwor. Source: https://commons.wikimedia.org/wiki/File:Vegetable_Soup_with_diced_Beef.jpg
+- banga-soup: File:Eba served with Fresh fish banga soup in a clay pot.jpg (CC BY-SA 4.0) by Justdifference. Source: https://commons.wikimedia.org/wiki/File:Eba_served_with_Fresh_fish_banga_soup_in_a_clay_pot.jpg
+- edikang-ikong: File:Edikaikong.JPG (CC BY-SA 4.0) by Nne75. Source: https://commons.wikimedia.org/wiki/File:Edikaikong.JPG
+- groundnut-soup: File:Fufu in groundnut soup with fish.jpg (CC BY 2.0) by aripeskoe2. Source: https://commons.wikimedia.org/wiki/File:Fufu_in_groundnut_soup_with_fish.jpg
+- pepper-soup-light: File:Goat meat pepper soup served with bread.jpg (CC BY-SA 4.0) by Nancy Nwachukwu. Source: https://commons.wikimedia.org/wiki/File:Goat_meat_pepper_soup_served_with_bread.jpg
+- zobo-drink: File:Roselle (zobo leaves).jpg (CC BY 4.0) by Zmu'az4Z. Source: https://commons.wikimedia.org/wiki/File:Roselle_(zobo_leaves).jpg

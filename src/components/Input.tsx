@@ -1,4 +1,5 @@
 import React from 'react';
+import Feather from '@expo/vector-icons/Feather';
 import {
   KeyboardTypeOptions,
   StyleSheet,
@@ -17,7 +18,7 @@ interface InputProps {
   secureTextEntry?: boolean;
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
   error?: string;
-  icon?: string;
+  iconName?: React.ComponentProps<typeof Feather>['name'];
   maxLength?: number;
 }
 
@@ -34,14 +35,21 @@ export function Input({
   secureTextEntry = false,
   autoCapitalize = 'none',
   error,
-  icon,
+  iconName,
   maxLength,
 }: InputProps) {
   return (
     <View style={styles.container}>
       {label && <Text style={styles.label}>{label}</Text>}
       <View style={[styles.inputContainer, error && styles.inputError]}>
-        {icon && <Text style={styles.icon}>{icon}</Text>}
+        {iconName && (
+          <Feather
+            name={iconName}
+            size={20}
+            color={error ? colors.error : colors.darkGreen}
+            style={styles.icon}
+          />
+        )}
         <TextInput
           style={styles.input}
           value={value}
@@ -85,7 +93,6 @@ const styles = StyleSheet.create({
     borderColor: colors.error,
   },
   icon: {
-    fontSize: 20,
     marginRight: 12,
   },
   input: {

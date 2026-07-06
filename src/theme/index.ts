@@ -1,5 +1,7 @@
+import { Platform } from 'react-native';
+
 /**
- * BigBen Theme & Design System
+ * MealWise Theme & Design System
  *
  * Color palette inspired by fresh, healthy foods:
  * - Light green for backgrounds (calm, natural)
@@ -30,39 +32,55 @@ export const colors = {
   overlay: 'rgba(46, 125, 50, 0.05)',
 } as const;
 
+export const appFontFamily = Platform.select({
+  android: 'sans-serif',
+  ios: 'System',
+  default: undefined,
+});
+
+const appTextBase = {
+  fontFamily: appFontFamily,
+  fontStyle: 'normal' as const,
+  letterSpacing: 0,
+};
+
 export const typography = {
   h1: {
+    ...appTextBase,
     fontSize: 32,
     fontWeight: '700' as const,
     color: colors.black,
-    letterSpacing: -0.5,
   },
   h2: {
+    ...appTextBase,
     fontSize: 24,
     fontWeight: '600' as const,
     color: colors.black,
   },
   h3: {
+    ...appTextBase,
     fontSize: 20,
     fontWeight: '600' as const,
     color: colors.black,
   },
   body: {
+    ...appTextBase,
     fontSize: 16,
     fontWeight: '400' as const,
     color: colors.black,
     lineHeight: 22,
   },
   caption: {
+    ...appTextBase,
     fontSize: 14,
     fontWeight: '400' as const,
     color: colors.gray,
   },
   button: {
+    ...appTextBase,
     fontSize: 16,
     fontWeight: '600' as const,
     color: colors.white,
-    letterSpacing: 0.3,
   },
 } as const;
 

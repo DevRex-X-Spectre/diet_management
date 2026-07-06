@@ -1,0 +1,398 @@
+[
+  {
+    "id": "grilled-tilapia",
+    "query": "grilled tilapia fish",
+    "title": "File:Grilled tilapia with banku.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Grilled_tilapia_with_banku.jpg",
+    "license": "CC BY 2.0",
+    "author": "sshreeves",
+    "file": "assets/foods/grilled-tilapia.jpg"
+  },
+  {
+    "id": "boiled-eggs",
+    "query": "boiled eggs",
+    "title": "File:Boiled Egg - Crossection.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Boiled_Egg_-_Crossection.jpg",
+    "license": "CC BY-SA 2.0",
+    "author": "Ramesh NG",
+    "file": "assets/foods/boiled-eggs.jpg"
+  },
+  {
+    "id": "grilled-chicken",
+    "query": "grilled chicken breast",
+    "title": "File:Pesto Chicken and Grilled Zucchini.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Pesto_Chicken_and_Grilled_Zucchini.jpg",
+    "license": "CC BY-SA 4.0",
+    "author": "Infrogmation of New Orleans",
+    "file": "assets/foods/grilled-chicken.jpg"
+  },
+  {
+    "id": "moi-moi",
+    "query": "Moi Moi Nigerian food",
+    "title": "File:MoinMoin London.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:MoinMoin_London.jpg",
+    "license": "CC BY-SA 3.0",
+    "author": "Secretlondon",
+    "file": "assets/foods/moi-moi.jpg"
+  },
+  {
+    "id": "boiled-beans",
+    "query": "grilled protein food",
+    "title": "File:Grilled centipede poster.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Grilled_centipede_poster.jpg",
+    "license": "CC BY 2.0",
+    "author": "Oskari Kettunen from Helsinki, Finland",
+    "file": "assets/foods/boiled-beans.jpg"
+  },
+  {
+    "id": "egusi-soup",
+    "query": "Egusi soup",
+    "title": "File:EGUSI UNSHELLED.JPG",
+    "source": "https://commons.wikimedia.org/wiki/File:EGUSI_UNSHELLED.JPG",
+    "license": "CC BY-SA 3.0",
+    "author": "Zz411 at English Wikipedia",
+    "file": "assets/foods/egusi-soup.jpg"
+  },
+  {
+    "id": "catfish-pepper-soup",
+    "query": "catfish pepper soup",
+    "title": "File:Catfish soup a delicious and widely accepted dish amongst all classes of Nigerians.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Catfish_soup_a_delicious_and_widely_accepted_dish_amongst_all_classes_of_Nigerians.jpg",
+    "license": "CC BY-SA 4.0",
+    "author": "Zend2020",
+    "file": "assets/foods/catfish-pepper-soup.jpg"
+  },
+  {
+    "id": "fish-stew",
+    "query": "fish stew",
+    "title": "File:Couscous with fish stew and vegetables.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Couscous_with_fish_stew_and_vegetables.jpg",
+    "license": "CC BY-SA 4.0",
+    "author": "Suleiman213",
+    "file": "assets/foods/fish-stew.jpg"
+  },
+  {
+    "id": "okpa",
+    "query": "Okpa Nigerian food bambara nut pudding",
+    "title": "File:Bambara nut pudding.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Bambara_nut_pudding.jpg",
+    "license": "CC BY-SA 4.0",
+    "author": "Bukky658",
+    "file": "assets/foods/okpa.jpg"
+  },
+  {
+    "id": "akara",
+    "query": "Akara Nigerian bean fritters",
+    "title": "File:Fried Bean cake.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Fried_Bean_cake.jpg",
+    "license": "CC BY-SA 4.0",
+    "author": "Zmu'az4Z",
+    "file": "assets/foods/akara.jpg"
+  },
+  {
+    "id": "chicken-suya",
+    "query": "chicken suya",
+    "title": "File:Chicken Grills (Suya) in Northern Nigeria (8).jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Chicken_Grills_(Suya)_in_Northern_Nigeria_(8).jpg",
+    "license": "CC BY-SA 4.0",
+    "author": "Zarerh",
+    "file": "assets/foods/chicken-suya.jpg"
+  },
+  {
+    "id": "grilled-turkey",
+    "query": "grilled turkey",
+    "title": "File:Kaburga a la parrilla.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Kaburga_a_la_parrilla.jpg",
+    "license": "CC BY-SA 4.0",
+    "author": "E4024",
+    "file": "assets/foods/grilled-turkey.jpg"
+  },
+  {
+    "id": "waterleaf",
+    "query": "waterleaf vegetable",
+    "title": "File:A woman trading vegetables.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:A_woman_trading_vegetables.jpg",
+    "license": "CC BY-SA 4.0",
+    "author": "Abanda bride",
+    "file": "assets/foods/waterleaf.jpg"
+  },
+  {
+    "id": "okra",
+    "query": "okra vegetable",
+    "title": "File:Okra (Abelmoschus esculentus) Feb 2019. DSC 0060 01.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Okra_(Abelmoschus_esculentus)_Feb_2019._DSC_0060_01.jpg",
+    "license": "CC BY-SA 4.0",
+    "author": "ADARSHluck",
+    "file": "assets/foods/okra.jpg"
+  },
+  {
+    "id": "bitter-leaf",
+    "query": "green leafy vegetables",
+    "title": "File:Green leafy vegetable.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Green_leafy_vegetable.jpg",
+    "license": "CC BY-SA 3.0",
+    "author": "ProjectManhattan",
+    "file": "assets/foods/bitter-leaf.jpg"
+  },
+  {
+    "id": "soko",
+    "query": "celosia argentea vegetable",
+    "title": "File:Celosia argentea at AVRDC.JPG",
+    "source": "https://commons.wikimedia.org/wiki/File:Celosia_argentea_at_AVRDC.JPG",
+    "license": "CC BY-SA 3.0",
+    "author": "Michael Hermann",
+    "file": "assets/foods/soko.jpg"
+  },
+  {
+    "id": "pumpkin-leaves-ugwu",
+    "query": "pumpkin leaves vegetable",
+    "title": "File:Rabbit in a pumpkin patch - P1100065.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Rabbit_in_a_pumpkin_patch_-_P1100065.jpg",
+    "license": "CC BY 4.0",
+    "author": "User:Vmenkov",
+    "file": "assets/foods/pumpkin-leaves-ugwu.jpg"
+  },
+  {
+    "id": "garden-egg-leaves",
+    "query": "green leafy vegetables",
+    "title": "File:Green leafy vegetable.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Green_leafy_vegetable.jpg",
+    "license": "CC BY-SA 3.0",
+    "author": "ProjectManhattan",
+    "file": "assets/foods/garden-egg-leaves.jpg"
+  },
+  {
+    "id": "brown-rice",
+    "query": "brown rice cooked food",
+    "title": "File:Duddleswell cheese with brown basmati rice.JPG",
+    "source": "https://commons.wikimedia.org/wiki/File:Duddleswell_cheese_with_brown_basmati_rice.JPG",
+    "license": "CC BY-SA 3.0",
+    "author": "Zigzig20s",
+    "file": "assets/foods/brown-rice.jpg"
+  },
+  {
+    "id": "ofada-rice",
+    "query": "ofada rice",
+    "title": "File:Ofada Rice.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Ofada_Rice.jpg",
+    "license": "CC BY-SA 4.0",
+    "author": "Ijeoma",
+    "file": "assets/foods/ofada-rice.jpg"
+  },
+  {
+    "id": "unripe-plantain",
+    "query": "unripe plantain",
+    "title": "File:Unripe plantain porridge.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Unripe_plantain_porridge.jpg",
+    "license": "CC BY-SA 4.0",
+    "author": "Nancy Nwachukwu",
+    "file": "assets/foods/unripe-plantain.jpg"
+  },
+  {
+    "id": "oats",
+    "query": "oatmeal oats",
+    "title": "File:Steel Cut Oats 008 A.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Steel_Cut_Oats_008_A.jpg",
+    "license": "Public domain",
+    "author": "Spunkybart at English Wikipedia",
+    "file": "assets/foods/oats.jpg"
+  },
+  {
+    "id": "semovita",
+    "query": "semolina porridge",
+    "title": "File:Griessbrei.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Griessbrei.jpg",
+    "license": "CC BY-SA 3.0",
+    "author": "Alice Wiegand",
+    "file": "assets/foods/semovita.jpg"
+  },
+  {
+    "id": "whole-wheat-bread",
+    "query": "whole wheat bread",
+    "title": "File:Rye and whole wheat bread, September 2009.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Rye_and_whole_wheat_bread,_September_2009.jpg",
+    "license": "CC BY-SA 2.0",
+    "author": "Dave Bonta",
+    "file": "assets/foods/whole-wheat-bread.jpg"
+  },
+  {
+    "id": "pounded-yam",
+    "query": "pounded yam Nigerian food",
+    "title": "File:Pounded Yam and Egusi Soup.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Pounded_Yam_and_Egusi_Soup.jpg",
+    "license": "CC BY-SA 4.0",
+    "author": "Justdifference",
+    "file": "assets/foods/pounded-yam.jpg"
+  },
+  {
+    "id": "amala",
+    "query": "Amala Nigerian food",
+    "title": "File:Amala ati Ewedu and Ogunfe.png",
+    "source": "https://commons.wikimedia.org/wiki/File:Amala_ati_Ewedu_and_Ogunfe.png",
+    "license": "CC BY-SA 4.0",
+    "author": "Jostbrain",
+    "file": "assets/foods/amala.jpg"
+  },
+  {
+    "id": "eba",
+    "query": "Eba garri Nigerian food",
+    "title": "File:Eba served with Fresh fish banga soup in a clay pot.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Eba_served_with_Fresh_fish_banga_soup_in_a_clay_pot.jpg",
+    "license": "CC BY-SA 4.0",
+    "author": "Justdifference",
+    "file": "assets/foods/eba.jpg"
+  },
+  {
+    "id": "apple",
+    "query": "apple fruit",
+    "title": "File:Santa Maria de Huerta Almacen.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Santa_Maria_de_Huerta_Almacen.jpg",
+    "license": "CC BY-SA 3.0",
+    "author": "Willtron",
+    "file": "assets/foods/apple.jpg"
+  },
+  {
+    "id": "watermelon",
+    "query": "watermelon fruit",
+    "title": "File:Taiwan 2009 Tainan City Organic Farm Watermelon FRD 7962.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Taiwan_2009_Tainan_City_Organic_Farm_Watermelon_FRD_7962.jpg",
+    "license": "CC BY-SA 3.0",
+    "author": "Fred Hsu (Wikipedia:User:Fred Hsu on en.wikipedia)",
+    "file": "assets/foods/watermelon.jpg"
+  },
+  {
+    "id": "pawpaw",
+    "query": "papaya fruit",
+    "title": "File:Papaya raindrop.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Papaya_raindrop.jpg",
+    "license": "CC BY-SA 2.5",
+    "author": "Muhammad Mahdi Karim",
+    "file": "assets/foods/pawpaw.jpg"
+  },
+  {
+    "id": "orange",
+    "query": "orange fruit",
+    "title": "File:Ambersweet oranges.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Ambersweet_oranges.jpg",
+    "license": "Public domain",
+    "author": "See source",
+    "file": "assets/foods/orange.jpg"
+  },
+  {
+    "id": "banana",
+    "query": "banana fruit",
+    "title": "File:Kadalikkula.JPG",
+    "source": "https://commons.wikimedia.org/wiki/File:Kadalikkula.JPG",
+    "license": "CC BY 2.5",
+    "author": "Noblevmy at Malayalam Wikipedia",
+    "file": "assets/foods/banana.jpg"
+  },
+  {
+    "id": "avocado",
+    "query": "avocado fruit",
+    "title": "File:Avocado11.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Avocado11.jpg",
+    "license": "CC BY 3.0",
+    "author": "Dalibor Bosits",
+    "file": "assets/foods/avocado.jpg"
+  },
+  {
+    "id": "greek-yogurt",
+    "query": "greek yogurt",
+    "title": "File:Hangop bord.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Hangop_bord.jpg",
+    "license": "CC BY-SA 3.0",
+    "author": "Kliek",
+    "file": "assets/foods/greek-yogurt.jpg"
+  },
+  {
+    "id": "low-fat-milk",
+    "query": "milk glass",
+    "title": "File:Bowl milk glass.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Bowl_milk_glass.jpg",
+    "license": "CC BY-SA 3.0",
+    "author": "Manfred Heyde",
+    "file": "assets/foods/low-fat-milk.jpg"
+  },
+  {
+    "id": "tiger-nuts",
+    "query": "tiger nuts cyperus esculentus",
+    "title": "File:Tiger nuts (Brown).jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Tiger_nuts_(Brown).jpg",
+    "license": "CC BY-SA 4.0",
+    "author": "Flixtey",
+    "file": "assets/foods/tiger-nuts.jpg"
+  },
+  {
+    "id": "ogbono-soup",
+    "query": "Ogbono soup",
+    "title": "File:Okro and Ogbono Soup.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Okro_and_Ogbono_Soup.jpg",
+    "license": "CC BY-SA 4.0",
+    "author": "Viruzlex",
+    "file": "assets/foods/ogbono-soup.jpg"
+  },
+  {
+    "id": "okra-soup",
+    "query": "okra soup",
+    "title": "File:Okro soup.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Okro_soup.jpg",
+    "license": "CC BY-SA 4.0",
+    "author": "Bukky658",
+    "file": "assets/foods/okra-soup.jpg"
+  },
+  {
+    "id": "vegetable-soup",
+    "query": "Nigerian vegetable soup",
+    "title": "File:Vegetable Soup with diced Beef.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Vegetable_Soup_with_diced_Beef.jpg",
+    "license": "CC BY-SA 4.0",
+    "author": "Chinedum 'nedJamez' Okerengwor",
+    "file": "assets/foods/vegetable-soup.jpg"
+  },
+  {
+    "id": "banga-soup",
+    "query": "Banga soup",
+    "title": "File:Eba served with Fresh fish banga soup in a clay pot.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Eba_served_with_Fresh_fish_banga_soup_in_a_clay_pot.jpg",
+    "license": "CC BY-SA 4.0",
+    "author": "Justdifference",
+    "file": "assets/foods/banga-soup.jpg"
+  },
+  {
+    "id": "edikang-ikong",
+    "query": "Edikang ikong soup",
+    "title": "File:Edikaikong.JPG",
+    "source": "https://commons.wikimedia.org/wiki/File:Edikaikong.JPG",
+    "license": "CC BY-SA 4.0",
+    "author": "Nne75",
+    "file": "assets/foods/edikang-ikong.jpg"
+  },
+  {
+    "id": "groundnut-soup",
+    "query": "groundnut soup peanut soup",
+    "title": "File:Fufu in groundnut soup with fish.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Fufu_in_groundnut_soup_with_fish.jpg",
+    "license": "CC BY 2.0",
+    "author": "aripeskoe2",
+    "file": "assets/foods/groundnut-soup.jpg"
+  },
+  {
+    "id": "pepper-soup-light",
+    "query": "pepper soup",
+    "title": "File:Goat meat pepper soup served with bread.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Goat_meat_pepper_soup_served_with_bread.jpg",
+    "license": "CC BY-SA 4.0",
+    "author": "Nancy Nwachukwu",
+    "file": "assets/foods/pepper-soup-light.jpg"
+  },
+  {
+    "id": "zobo-drink",
+    "query": "zobo drink hibiscus tea",
+    "title": "File:Roselle (zobo leaves).jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Roselle_(zobo_leaves).jpg",
+    "license": "CC BY 4.0",
+    "author": "Zmu'az4Z",
+    "file": "assets/foods/zobo-drink.jpg"
+  }
+]

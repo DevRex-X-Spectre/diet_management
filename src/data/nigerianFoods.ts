@@ -5,7 +5,8 @@
  * This is the seed data for the recommendation engine.
  */
 
-import type { Food, HealthCondition } from '../types/food';
+import type { HealthCondition } from '../types';
+import type { Food } from '../types/food';
 
 // Helper to avoid typing the same conditions repeatedly
 const ALL: HealthCondition[] = ['TYPE_1_DIABETES', 'TYPE_2_DIABETES', 'HYPERTENSION', 'OBESITY'];

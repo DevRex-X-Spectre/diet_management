@@ -118,7 +118,7 @@ export function PersonalInfoScreen() {
               keyboardType="number-pad"
               maxLength={3}
               error={ageError}
-              icon="🎂"
+              iconName="calendar"
             />
 
             <View style={styles.section}>

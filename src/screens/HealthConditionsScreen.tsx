@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
 import { ProgressIndicator } from '../components/ProgressIndicator';
+import { saveOnboardingProgress } from '../services/storage';
 import {
   HEALTH_CONDITION_DESCRIPTIONS,
   HEALTH_CONDITION_ICONS,
@@ -38,8 +39,18 @@ export function HealthConditionsScreen() {
     );
   };
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     const parentParams = route.params;
+    await saveOnboardingProgress({
+      currentStep: 'summary',
+      age: parentParams.age,
+      gender: parentParams.gender,
+      heightCm: parentParams.heightCm,
+      weightKg: parentParams.weightKg,
+      activityLevel: parentParams.activityLevel,
+      healthConditions: selected,
+    });
+
     navigation.navigate('ProfileSummary', {
       age: parentParams.age,
       gender: parentParams.gender,

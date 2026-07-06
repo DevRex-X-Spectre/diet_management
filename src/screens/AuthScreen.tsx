@@ -13,7 +13,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
 import { ProgressIndicator } from '../components/ProgressIndicator';
-import { saveAuthToken } from '../services/storage';
+import {
+  loadProfile,
+  loginLocalAccount,
+  registerLocalAccount,
+  saveAuthToken,
+  saveOnboardingProgress,
+} from '../services/storage';
 import { colors, spacing, typography } from '../theme';
 import type { RootStackParamList } from '../types';
 import { isValidEmail, isValidPassword } from '../utils/calculations';
@@ -33,6 +39,7 @@ export function AuthScreen() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [formError, setFormError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const isRegister = mode === 'register';
@@ -41,6 +48,7 @@ export function AuthScreen() {
     let valid = true;
     setEmailError('');
     setPasswordError('');
+    setFormError('');
 
     if (!isValidEmail(email)) {
       setEmailError('Please enter a valid email');
@@ -65,12 +73,45 @@ export function AuthScreen() {
 
     setLoading(true);
     try {
-      // Simulate auth API call - to be replaced with real backend
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      await saveAuthToken(`mock-token-${Date.now()}`);
+      const normalizedEmail = email.trim().toLowerCase();
+
+      if (isRegister) {
+        const result = await registerLocalAccount(normalizedEmail, password);
+        if (!result.ok) {
+          setEmailError(result.error);
+          return;
+        }
+
+        await saveAuthToken(`local-token-${normalizedEmail}-${Date.now()}`);
+        await saveOnboardingProgress({
+          currentStep: 'personalInfo',
+          email: normalizedEmail,
+        });
+        navigation.navigate('PersonalInfo');
+        return;
+      }
+
+      const result = await loginLocalAccount(normalizedEmail, password);
+      if (!result.ok) {
+        setFormError(result.error);
+        return;
+      }
+
+      await saveAuthToken(`local-token-${normalizedEmail}-${Date.now()}`);
+      const savedProfile = await loadProfile();
+
+      if (savedProfile?.email === normalizedEmail) {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Home' }],
+        });
+        return;
+      }
+
       navigation.navigate('PersonalInfo');
     } catch (error) {
       console.error('Auth error:', error);
+      setFormError('Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -81,6 +122,7 @@ export function AuthScreen() {
     setConfirmPassword('');
     setEmailError('');
     setPasswordError('');
+    setFormError('');
   };
 
   return (
@@ -115,7 +157,7 @@ export function AuthScreen() {
               keyboardType="email-address"
               autoCapitalize="none"
               error={emailError}
-              icon="📧"
+              iconName="mail"
             />
 
             <Input
@@ -125,7 +167,7 @@ export function AuthScreen() {
               placeholder="At least 6 characters"
               secureTextEntry
               error={passwordError}
-              icon="🔒"
+              iconName="lock"
             />
 
             {isRegister && (
@@ -135,7 +177,7 @@ export function AuthScreen() {
                 onChangeText={setConfirmPassword}
                 placeholder="Re-enter your password"
                 secureTextEntry
-                icon="🔒"
+                iconName="lock"
               />
             )}
 
@@ -145,6 +187,8 @@ export function AuthScreen() {
               loading={loading}
               style={styles.submitButton}
             />
+
+            {formError && <Text style={styles.formError}>{formError}</Text>}
 
             <View style={styles.toggleContainer}>
               <Text style={styles.toggleText}>
@@ -196,6 +240,12 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     marginTop: spacing.md,
+  },
+  formError: {
+    ...typography.caption,
+    color: colors.error,
+    textAlign: 'center',
+    marginTop: spacing.sm,
   },
   toggleContainer: {
     flexDirection: 'row',

@@ -1,5 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import React, { useEffect, useRef } from 'react';
 import {
   Animated,
@@ -14,18 +15,18 @@ import { colors, spacing, typography } from '../theme';
 import type { RootStackParamList } from '../types';
 
 const { width } = Dimensions.get('window');
+const AnimatedView = Animated.createAnimatedComponent(View);
 
 type NavProp = NativeStackNavigationProp<RootStackParamList, 'Welcome'>;
 
-// Floating food icons that gently animate up and down
 const FOOD_ICONS = [
-  { emoji: '🥗', delay: 0, x: width * 0.15 },
-  { emoji: '🍎', delay: 300, x: width * 0.45 },
-  { emoji: '🥦', delay: 600, x: width * 0.75 },
-  { emoji: '🐟', delay: 900, x: width * 0.25 },
-  { emoji: '🥑', delay: 1200, x: width * 0.55 },
-  { emoji: '🥚', delay: 1500, x: width * 0.85 },
-];
+  { icon: 'leaf', delay: 0, x: width * 0.15 },
+  { icon: 'food-apple-outline', delay: 300, x: width * 0.45 },
+  { icon: 'sprout-outline', delay: 600, x: width * 0.75 },
+  { icon: 'fish', delay: 900, x: width * 0.25 },
+  { icon: 'food-variant', delay: 1200, x: width * 0.55 },
+  { icon: 'egg-outline', delay: 1500, x: width * 0.85 },
+] as const;
 
 /**
  * Welcome / Hero screen - first impression for the app.
@@ -72,7 +73,7 @@ export function WelcomeScreen() {
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <View style={styles.iconContainer}>
         {FOOD_ICONS.map((item, index) => (
-          <Animated.Text
+          <AnimatedView
             key={index}
             style={[
               styles.floatingIcon,
@@ -89,17 +90,21 @@ export function WelcomeScreen() {
               },
             ]}
           >
-            {item.emoji}
-          </Animated.Text>
+            <MaterialCommunityIcons
+              name={item.icon}
+              size={34}
+              color={colors.darkGreen}
+            />
+          </AnimatedView>
         ))}
       </View>
 
       <View style={styles.content}>
         <View style={styles.logoContainer}>
-          <Text style={styles.logo}>BigBen</Text>
+          <Text style={styles.logo}>MealWise</Text>
           <View style={styles.logoUnderline} />
         </View>
-        <Text style={styles.tagline}>Your Diet Companion</Text>
+        <Text style={styles.tagline}>Your smart meal companion</Text>
         <Text style={styles.description}>
           Healthy eating for a better life.{'\n'}
           Personalized for your health needs.
@@ -135,8 +140,14 @@ const styles = StyleSheet.create({
   },
   floatingIcon: {
     position: 'absolute',
-    fontSize: 42,
     top: '40%',
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.white,
+    opacity: 0.86,
   },
   content: {
     alignItems: 'center',
@@ -150,14 +161,15 @@ const styles = StyleSheet.create({
     fontSize: 48,
     fontWeight: '800',
     color: colors.darkGreen,
-    letterSpacing: -1,
+    letterSpacing: 0,
   },
   logoUnderline: {
-    width: 60,
-    height: 4,
+    width: 132,
+    height: 5,
     backgroundColor: colors.darkGreen,
-    borderRadius: 2,
+    borderRadius: 999,
     marginTop: spacing.xs,
+    transform: [{ skewX: '-22deg' }, { rotate: '-2deg' }],
   },
   tagline: {
     fontSize: 18,

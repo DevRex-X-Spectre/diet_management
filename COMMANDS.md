@@ -1,6 +1,6 @@
-# BigBen - Commands Reference
+# MealWise - Commands Reference
 
-Quick reference for building, installing, and running the BigBen React Native app.
+Quick reference for building, installing, and running the MealWise React Native app.
 
 ---
 
@@ -8,12 +8,12 @@ Quick reference for building, installing, and running the BigBen React Native ap
 
 ### Create New Expo Project (one-time)
 ```bash
-npx create-expo-app@latest BigBen --template blank-typescript
+npx create-expo-app@latest MealWise --template blank-typescript
 ```
 
 ### Install Core Dependencies (one-time)
 ```bash
-cd BigBen
+cd MealWise
 npx expo install expo-sqlite @react-native-async-storage/async-storage \
   @react-navigation/native @react-navigation/native-stack \
   react-native-screens react-native-safe-area-context react-native-gesture-handler
@@ -55,26 +55,41 @@ npx expo start --ios
 
 ---
 
-## 🔨 Building APK (Standalone)
+## 🔨 Building APKs
 
 ### Step 1: Prebuild (creates native android/ folder)
 ```bash
 npx expo prebuild --platform android
 ```
 
-### Step 2a: Build Debug APK with Gradle
-```bash
-cd android
-./gradlew assembleDebug
-```
-**Output:** `android/app/build/outputs/apk/debug/app-debug.apk`
+### Standalone Phone APK (recommended)
+Use a release APK when you want to install the app on your phone and open it
+without Metro running on your computer. The default script builds `arm64-v8a`,
+which is the normal architecture for modern Android phones.
 
-### Step 2b: Build Release APK (production)
 ```bash
-cd android
-./gradlew assembleRelease
+npm run build:android:release
 ```
 **Output:** `android/app/build/outputs/apk/release/app-release.apk`
+
+For a universal release APK with all configured Android architectures:
+```bash
+npm run build:android:release:all
+```
+
+Install it:
+```bash
+npm run install:android:release
+```
+
+### Development Debug APK
+Debug APKs do not include the JavaScript bundle. They only work while Metro is
+running and reachable from the phone.
+
+```bash
+npm run build:android:debug
+```
+**Output:** `android/app/build/outputs/apk/debug/app-debug.apk`
 
 ---
 
@@ -85,16 +100,19 @@ cd android
 adb devices
 ```
 
-### Install Debug APK
+### Install Release APK
 ```bash
 # From project root:
-adb install android/app/build/outputs/apk/debug/app-debug.apk
+npm run install:android:release
 
-# From inside android/ directory:
-adb install app/build/outputs/apk/debug/app-debug.apk
+# Or directly:
+adb install -r android/app/build/outputs/apk/release/app-release.apk
 ```
 
-### Build + Install in One Step
+### Build + Install Debug APK
+Only use this while Metro is running. If you open this APK without Metro, the app
+will show "Unable to load script".
+
 ```bash
 cd android
 ./gradlew installDebug
@@ -107,7 +125,7 @@ adb uninstall com.anonymous.bigben
 
 ### Force Reinstall (replace existing)
 ```bash
-adb install -r android/app/build/outputs/apk/debug/app-debug.apk
+adb install -r android/app/build/outputs/apk/release/app-release.apk
 ```
 
 ---
@@ -167,7 +185,7 @@ npx expo start --tunnel
 ## 📁 Project Structure Quick Reference
 
 ```
-bigben/
+mealwise/
 ├── App.tsx                    # Root component
 ├── index.ts                   # Entry point
 ├── app.json                   # Expo config
@@ -194,7 +212,7 @@ bigben/
 
 ### "No Android device found"
 - Enable USB debugging on phone
-- Run `adb devices` to verify connection
+- Run `adb devices` to verify connectiony
 - Try a different USB cable
 
 ### "Build failed" after dependency change
@@ -203,7 +221,23 @@ cd android
 ./gradlew clean
 cd ..
 npx expo prebuild --clean
-cd android && ./gradlew assembleDebug
+npm run build:android:release
+```
+
+### "Unable to load script" after installing APK
+You installed a debug APK without Metro. Build and install the release APK:
+
+```bash
+npm run build:android:release
+npm run install:android:release
+```
+
+For debug only, start Metro first:
+
+```bash
+npx expo start
+adb reverse tcp:8081 tcp:8081
+cd android && ./gradlew installDebug
 ```
 
 ### "Package conflicts" / "Duplicate modules"
