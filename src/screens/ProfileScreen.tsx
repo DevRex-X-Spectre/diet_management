@@ -11,6 +11,8 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { AppBottomNav } from '../components/AppBottomNav';
+import { AppTopNav } from '../components/AppTopNav';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
 import { Input } from '../components/Input';
@@ -22,7 +24,7 @@ import {
   saveProfile,
   StoredProfile,
 } from '../services/storage';
-import { borderRadius, colors, spacing, typography } from '../theme';
+import { borderRadius, colors, shadows, spacing, typography } from '../theme';
 import {
   ACTIVITY_DESCRIPTIONS,
   ACTIVITY_LABELS,
@@ -34,10 +36,13 @@ import {
 } from '../types';
 import {
   calculateBMI,
+  calculateAgeFromDateOfBirth,
   calculateBMR,
   calculateTDEE,
+  formatDateOfBirthInput,
   getBMICategory,
   getBMILabel,
+  validateDateOfBirth,
 } from '../utils/calculations';
 
 type NavProp = NativeStackNavigationProp<RootStackParamList, 'Profile'>;
@@ -53,13 +58,13 @@ const CONDITION_OPTIONS: HealthCondition[] = [
 export function ProfileScreen() {
   const navigation = useNavigation<NavProp>();
   const [profile, setProfile] = useState<StoredProfile | null>(null);
-  const [age, setAge] = useState('');
+  const [dateOfBirth, setDateOfBirth] = useState('');
   const [gender, setGender] = useState<'MALE' | 'FEMALE'>('MALE');
   const [heightCm, setHeightCm] = useState(170);
   const [weightKg, setWeightKg] = useState(70);
   const [activityLevel, setActivityLevel] = useState<ActivityLevel>('MODERATE');
   const [healthConditions, setHealthConditions] = useState<HealthCondition[]>([]);
-  const [ageError, setAgeError] = useState('');
+  const [dateOfBirthError, setDateOfBirthError] = useState('');
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -68,20 +73,21 @@ export function ProfileScreen() {
   }, []);
 
   const metrics = useMemo(() => {
-    const ageNum = parseInt(age, 10) || 30;
+    const calculatedAge = calculateAgeFromDateOfBirth(dateOfBirth);
+    const age = calculatedAge ?? profile?.age ?? 30;
     const bmi = calculateBMI(weightKg, heightCm);
     const bmiCategory = getBMICategory(bmi);
-    const bmr = calculateBMR(weightKg, heightCm, ageNum, gender);
+    const bmr = calculateBMR(weightKg, heightCm, age, gender);
     const tdee = calculateTDEE(bmr, activityLevel);
-    return { bmi, bmiCategory, bmr, tdee };
-  }, [activityLevel, age, gender, heightCm, weightKg]);
+    return { age, bmi, bmiCategory, bmr, tdee };
+  }, [activityLevel, dateOfBirth, gender, heightCm, profile?.age, weightKg]);
 
   const loadData = async () => {
     try {
       const savedProfile = await loadProfile();
       if (savedProfile) {
         setProfile(savedProfile);
-        setAge(String(savedProfile.age));
+        setDateOfBirth(savedProfile.dateOfBirth ?? '');
         setGender(savedProfile.gender);
         setHeightCm(savedProfile.heightCm);
         setWeightKg(savedProfile.weightKg);
@@ -106,9 +112,9 @@ export function ProfileScreen() {
   const handleSave = async () => {
     if (!profile) return;
 
-    const ageNum = parseInt(age, 10);
-    if (Number.isNaN(ageNum) || ageNum < 1 || ageNum > 120) {
-      setAgeError('Please enter a valid age (1-120)');
+    const result = validateDateOfBirth(dateOfBirth);
+    if (result.age === null) {
+      setDateOfBirthError(result.error);
       return;
     }
 
@@ -116,7 +122,8 @@ export function ProfileScreen() {
     try {
       await saveProfile({
         ...profile,
-        age: ageNum,
+        dateOfBirth,
+        age: result.age,
         gender,
         heightCm,
         weightKg,
@@ -156,17 +163,8 @@ export function ProfileScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <AppTopNav title="Your Profile" subtitle="Account" profileActive />
       <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
-        <View style={styles.header}>
-          <Pressable style={styles.iconButton} onPress={() => navigation.goBack()}>
-            <MaterialCommunityIcons name="arrow-left" size={22} color={colors.darkGreen} />
-          </Pressable>
-          <View style={styles.headerText}>
-            <Text style={styles.greeting}>Account</Text>
-            <Text style={styles.title}>Your Profile</Text>
-          </View>
-        </View>
-
         <View style={styles.profileCard}>
           <View style={styles.avatar}>
             <MaterialCommunityIcons name="account" size={36} color={colors.white} />
@@ -174,7 +172,7 @@ export function ProfileScreen() {
           <View style={styles.profileInfo}>
             <Text style={styles.email}>{profile?.email ?? 'MealWise user'}</Text>
             <Text style={styles.profileMeta}>
-              BMI {metrics.bmi} • {getBMILabel(metrics.bmiCategory)} • {metrics.tdee} cal/day
+              Age {metrics.age} • BMI {metrics.bmi} • {metrics.tdee} cal/day
             </Text>
           </View>
         </View>
@@ -182,18 +180,19 @@ export function ProfileScreen() {
         <Card style={styles.section}>
           <Text style={styles.sectionTitle}>Personal details</Text>
           <Input
-            label="Age"
-            value={age}
+            label="Date of Birth"
+            value={dateOfBirth}
             onChangeText={(text) => {
-              setAge(text.replace(/[^0-9]/g, ''));
-              setAgeError('');
+              setDateOfBirth(formatDateOfBirthInput(text));
+              setDateOfBirthError('');
             }}
-            placeholder="Age"
+            placeholder="YYYY-MM-DD"
             keyboardType="number-pad"
-            maxLength={3}
-            error={ageError}
+            maxLength={10}
+            error={dateOfBirthError}
             iconName="calendar"
           />
+          <Text style={styles.calculatedAge}>Calculated age: {metrics.age} years</Text>
 
           <Text style={styles.fieldLabel}>Gender</Text>
           <View style={styles.pillRow}>
@@ -256,8 +255,24 @@ export function ProfileScreen() {
         </Card>
 
         <Button title="Save Changes" onPress={handleSave} loading={saving} style={styles.saveButton} />
-        <Button title="Sign Out" variant="outline" onPress={handleSignOut} style={styles.signOutButton} />
+
+        <View style={styles.accountActions}>
+          <Pressable
+            onPress={handleSignOut}
+            style={({ pressed }) => [styles.signOutCard, pressed && styles.signOutCardPressed]}
+          >
+            <View style={styles.signOutIcon}>
+              <MaterialCommunityIcons name="logout" size={22} color={colors.error} />
+            </View>
+            <View style={styles.signOutCopy}>
+              <Text style={styles.signOutTitle}>Sign Out</Text>
+              <Text style={styles.signOutSubtitle}>End this local session on this phone</Text>
+            </View>
+            <MaterialCommunityIcons name="chevron-right" size={24} color={colors.gray} />
+          </Pressable>
+        </View>
       </ScrollView>
+      <AppBottomNav />
     </SafeAreaView>
   );
 }
@@ -353,6 +368,14 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
     marginLeft: 4,
   },
+  calculatedAge: {
+    ...typography.caption,
+    color: colors.darkGreen,
+    fontWeight: '700',
+    marginTop: -spacing.sm,
+    marginBottom: spacing.md,
+    marginLeft: 4,
+  },
   pillRow: {
     flexDirection: 'row',
     gap: spacing.md,
@@ -391,7 +414,46 @@ const styles = StyleSheet.create({
   saveButton: {
     marginTop: spacing.sm,
   },
-  signOutButton: {
+  accountActions: {
     marginTop: spacing.md,
+    marginBottom: spacing.lg,
+  },
+  signOutCard: {
+    ...shadows.small,
+    minHeight: 72,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(244, 67, 54, 0.22)',
+    backgroundColor: colors.white,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+  signOutCardPressed: {
+    opacity: 0.82,
+    transform: [{ scale: 0.99 }],
+  },
+  signOutIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: borderRadius.full,
+    backgroundColor: 'rgba(244, 67, 54, 0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  signOutCopy: {
+    flex: 1,
+  },
+  signOutTitle: {
+    ...typography.body,
+    color: colors.error,
+    fontWeight: '800',
+  },
+  signOutSubtitle: {
+    ...typography.caption,
+    color: colors.gray,
+    marginTop: 2,
   },
 });

@@ -33,7 +33,8 @@ function hasHealthConditionsParams(
   progress: Awaited<ReturnType<typeof loadOnboardingProgress>>
 ): progress is NonNullable<typeof progress> & RootStackParamList['HealthConditions'] {
   return Boolean(
-    progress?.age &&
+    progress?.dateOfBirth &&
+    progress.age &&
     progress.gender &&
     progress.heightCm &&
     progress.weightKg &&
@@ -70,6 +71,7 @@ async function getBootstrapRoute(): Promise<BootstrapRoute> {
       name: 'ProfileSummary',
       params: {
         age: progress.age,
+        dateOfBirth: progress.dateOfBirth,
         gender: progress.gender,
         heightCm: progress.heightCm,
         weightKg: progress.weightKg,
@@ -84,6 +86,7 @@ async function getBootstrapRoute(): Promise<BootstrapRoute> {
       name: 'HealthConditions',
       params: {
         age: progress.age,
+        dateOfBirth: progress.dateOfBirth,
         gender: progress.gender,
         heightCm: progress.heightCm,
         weightKg: progress.weightKg,

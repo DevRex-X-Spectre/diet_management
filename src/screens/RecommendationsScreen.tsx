@@ -1,6 +1,4 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -12,6 +10,8 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { AppBottomNav } from '../components/AppBottomNav';
+import { AppTopNav } from '../components/AppTopNav';
 import { FoodCard } from '../components/FoodCard';
 import { FoodDetailModal } from '../components/FoodDetailModal';
 import {
@@ -22,10 +22,8 @@ import {
 } from '../services/recommendation/RecommendationEngine';
 import { loadProfile, StoredProfile } from '../services/storage';
 import { colors, spacing, typography } from '../theme';
-import { HEALTH_CONDITION_LABELS, RootStackParamList } from '../types';
+import { HEALTH_CONDITION_LABELS } from '../types';
 import type { RecommendedFood } from '../types/food';
-
-type NavProp = NativeStackNavigationProp<RootStackParamList, 'Recommendations'>;
 
 const MEAL_LABELS: Record<MealSlot, string> = {
   breakfast: 'Breakfast',
@@ -40,7 +38,6 @@ const MEAL_ICONS: Record<MealSlot, React.ComponentProps<typeof MaterialCommunity
 };
 
 export function RecommendationsScreen() {
-  const navigation = useNavigation<NavProp>();
   const { width } = useWindowDimensions();
   const [profile, setProfile] = useState<StoredProfile | null>(null);
   const [recommendations, setRecommendations] = useState<RecommendedFood[]>([]);
@@ -103,17 +100,8 @@ export function RecommendationsScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <AppTopNav title="Recommended for You" subtitle="Explore foods" />
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.header}>
-          <Pressable style={styles.iconButton} onPress={() => navigation.goBack()}>
-            <MaterialCommunityIcons name="arrow-left" size={22} color={colors.darkGreen} />
-          </Pressable>
-          <View style={styles.headerText}>
-            <Text style={styles.greeting}>Explore foods</Text>
-            <Text style={styles.title}>Recommended for You</Text>
-          </View>
-        </View>
-
         <View style={styles.conditionsBanner}>
           <Text style={styles.conditionsLabel}>Based on your conditions</Text>
           <Text style={styles.conditionsText}>{conditionsSummary}</Text>
@@ -179,6 +167,7 @@ export function RecommendationsScreen() {
         meal={selectedMeal}
         onClose={() => setSelectedRecommendation(null)}
       />
+      <AppBottomNav activeRoute="Recommendations" />
     </SafeAreaView>
   );
 }

@@ -67,6 +67,66 @@ export function calculateTDEE(
 }
 
 /**
+ * Format a typed date-of-birth value as YYYY-MM-DD.
+ * Keeps only digits so mobile numeric keyboards work cleanly.
+ */
+export function formatDateOfBirthInput(value: string): string {
+  const digits = value.replace(/[^0-9]/g, '').slice(0, 8);
+  if (digits.length <= 4) return digits;
+  if (digits.length <= 6) return `${digits.slice(0, 4)}-${digits.slice(4)}`;
+  return `${digits.slice(0, 4)}-${digits.slice(4, 6)}-${digits.slice(6)}`;
+}
+
+export function calculateAgeFromDateOfBirth(dateOfBirth: string): number | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateOfBirth);
+  if (!match) return null;
+
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const birthDate = new Date(year, month - 1, day);
+
+  if (
+    birthDate.getFullYear() !== year ||
+    birthDate.getMonth() !== month - 1 ||
+    birthDate.getDate() !== day
+  ) {
+    return null;
+  }
+
+  const today = new Date();
+  if (birthDate > today) return null;
+
+  let age = today.getFullYear() - year;
+  const hasHadBirthdayThisYear =
+    today.getMonth() > month - 1 ||
+    (today.getMonth() === month - 1 && today.getDate() >= day);
+
+  if (!hasHadBirthdayThisYear) {
+    age -= 1;
+  }
+
+  return age;
+}
+
+export function validateDateOfBirth(dateOfBirth: string): {
+  age: number | null;
+  error: string;
+} {
+  const age = calculateAgeFromDateOfBirth(dateOfBirth);
+
+  if (age === null) {
+    return { age: null, error: 'Enter a valid date as YYYY-MM-DD' };
+  }
+
+  if (age < 1 || age > 120) {
+    return { age: null, error: 'Date of birth must give an age between 1 and 120' };
+  }
+
+  return { age, error: '' };
+}
+
+/**
  * Get BMI color based on category
  */
 export function getBMIColor(category: BMICategory): string {

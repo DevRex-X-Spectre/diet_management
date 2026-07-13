@@ -31,6 +31,7 @@ type NavProp = NativeStackNavigationProp<RootStackParamList, 'ProfileSummary'>;
 type SummaryRouteProp = RouteProp<RootStackParamList, 'ProfileSummary'>;
 
 interface ProfileSummaryParams {
+  dateOfBirth?: string;
   age?: number;
   gender?: 'MALE' | 'FEMALE';
   heightCm?: number;
@@ -46,6 +47,7 @@ export function ProfileSummaryScreen() {
 
   // Read data passed through navigation
   const params = (route.params ?? {}) as ProfileSummaryParams;
+  const dateOfBirth = params.dateOfBirth ?? '';
   const age = params.age ?? 0;
   const gender = params.gender ?? 'MALE';
   const heightCm = params.heightCm ?? 170;
@@ -70,6 +72,7 @@ export function ProfileSummaryScreen() {
       await saveProfile({
         id: generateId(),
         email: currentEmail ?? 'user@mealwise.app',
+        dateOfBirth,
         age,
         gender,
         heightCm,
@@ -110,7 +113,8 @@ export function ProfileSummaryScreen() {
 
         <Card style={styles.section}>
           <Text style={styles.sectionTitle}>📊 Body Metrics</Text>
-          <MetricRow label="Age" value={`${age} years`} />
+          <MetricRow label="Date of Birth" value={dateOfBirth || 'Not set'} />
+          <MetricRow label="Calculated Age" value={`${age} years`} />
           <MetricRow
             label="Gender"
             value={gender === 'MALE' ? 'Male' : 'Female'}

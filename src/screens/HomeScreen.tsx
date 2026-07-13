@@ -12,6 +12,8 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { AppBottomNav } from '../components/AppBottomNav';
+import { AppTopNav } from '../components/AppTopNav';
 import { foodImages } from '../data/foodImages';
 import { getFoodById } from '../data/nigerianFoods';
 import {
@@ -120,17 +122,8 @@ export function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <AppTopNav title="Your Meal Week" subtitle="Dashboard" showBack={false} />
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.header}>
-          <View>
-            <Text style={styles.greeting}>Hello</Text>
-            <Text style={styles.title}>Your Meal Week</Text>
-          </View>
-          <Pressable style={styles.profileButton} onPress={() => navigation.navigate('Profile')}>
-            <MaterialCommunityIcons name="account-circle" size={28} color={colors.darkGreen} />
-          </Pressable>
-        </View>
-
         <View style={styles.heroCard}>
           <View style={styles.heroTopRow}>
             <View>
@@ -253,6 +246,7 @@ export function HomeScreen() {
           })}
         </View>
       </ScrollView>
+      <AppBottomNav activeRoute="Home" />
     </SafeAreaView>
   );
 }

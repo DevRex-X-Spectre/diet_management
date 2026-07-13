@@ -80,6 +80,7 @@ export const ACTIVITY_MULTIPLIERS: Record<ActivityLevel, number> = {
 export interface PatientProfile {
   id: string;
   email: string;
+  dateOfBirth?: string;
   age: number;
   gender: Gender;
   heightCm: number;
@@ -124,6 +125,7 @@ export type RootStackParamList = {
   Auth: { mode: 'register' | 'login' } | undefined;
   PersonalInfo: undefined;
   HealthConditions: {
+    dateOfBirth: string;
     age: number;
     gender: Gender;
     heightCm: number;
@@ -131,6 +133,7 @@ export type RootStackParamList = {
     activityLevel: ActivityLevel;
   };
   ProfileSummary: {
+    dateOfBirth: string;
     age: number;
     gender: Gender;
     heightCm: number;

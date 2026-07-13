@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Feather from '@expo/vector-icons/Feather';
 import {
   KeyboardTypeOptions,
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
@@ -38,6 +39,9 @@ export function Input({
   iconName,
   maxLength,
 }: InputProps) {
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const canRevealPassword = secureTextEntry;
+
   return (
     <View style={styles.container}>
       {label && <Text style={styles.label}>{label}</Text>}
@@ -57,10 +61,24 @@ export function Input({
           placeholder={placeholder}
           placeholderTextColor={colors.gray}
           keyboardType={keyboardType}
-          secureTextEntry={secureTextEntry}
+          secureTextEntry={secureTextEntry && !passwordVisible}
           autoCapitalize={autoCapitalize}
           maxLength={maxLength}
         />
+        {canRevealPassword && (
+          <Pressable
+            onPress={() => setPasswordVisible((visible) => !visible)}
+            style={styles.eyeButton}
+            accessibilityRole="button"
+            accessibilityLabel={passwordVisible ? 'Hide password' : 'Show password'}
+          >
+            <Feather
+              name={passwordVisible ? 'eye-off' : 'eye'}
+              size={20}
+              color={colors.gray}
+            />
+          </Pressable>
+        )}
       </View>
       {error && <Text style={styles.errorText}>{error}</Text>}
     </View>
@@ -100,6 +118,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.black,
     paddingVertical: 12,
+  },
+  eyeButton: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: -8,
   },
   errorText: {
     ...typography.caption,

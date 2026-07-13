@@ -1,6 +1,4 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
@@ -13,7 +11,8 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Button } from '../components/Button';
+import { AppBottomNav } from '../components/AppBottomNav';
+import { AppTopNav } from '../components/AppTopNav';
 import { foodImages } from '../data/foodImages';
 import { getFoodById } from '../data/nigerianFoods';
 import {
@@ -32,10 +31,7 @@ import {
   WeeklyMealPlan,
 } from '../services/storage';
 import { borderRadius, colors, spacing, typography } from '../theme';
-import type { RootStackParamList } from '../types';
 import type { RecommendedFood } from '../types/food';
-
-type NavProp = NativeStackNavigationProp<RootStackParamList, 'MealPlanner'>;
 
 const MEAL_LABELS: Record<MealSlot, string> = {
   breakfast: 'Breakfast',
@@ -52,12 +48,10 @@ const MEAL_ICONS: Record<MealSlot, React.ComponentProps<typeof MaterialCommunity
 const MEALS: MealSlot[] = ['breakfast', 'lunch', 'dinner'];
 
 export function MealPlannerScreen() {
-  const navigation = useNavigation<NavProp>();
   const [profile, setProfile] = useState<StoredProfile | null>(null);
   const [plan, setPlan] = useState<WeeklyMealPlan>(createEmptyWeeklyMealPlan());
   const [selectedDay, setSelectedDay] = useState<WeekDayKey>('monday');
   const [editingMeal, setEditingMeal] = useState<MealSlot | null>(null);
-  const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -115,13 +109,10 @@ export function MealPlannerScreen() {
 
   const persistPlan = async (nextPlan: WeeklyMealPlan) => {
     setPlan(nextPlan);
-    setSaving(true);
     try {
       await saveWeeklyMealPlan(nextPlan);
     } catch (error) {
       console.error('Failed to save meal plan:', error);
-    } finally {
-      setSaving(false);
     }
   };
 
@@ -139,20 +130,6 @@ export function MealPlannerScreen() {
     };
     await persistPlan(nextPlan);
     setEditingMeal(null);
-  };
-
-  const autoFillWeek = async () => {
-    const nextPlan = createEmptyWeeklyMealPlan();
-
-    WEEK_DAYS.forEach((day, dayIndex) => {
-      MEALS.forEach((meal) => {
-        const options = recommendationsByMeal[meal];
-        const option = options[dayIndex % Math.max(options.length, 1)];
-        nextPlan.days[day.key][meal] = { foodId: option?.food.id ?? null };
-      });
-    });
-
-    await persistPlan(nextPlan);
   };
 
   const getScheduledRecommendation = (meal: MealSlot): RecommendedFood | null => {
@@ -174,17 +151,8 @@ export function MealPlannerScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <AppTopNav title="Plan Your Meals" subtitle="Weekly schedule" />
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.header}>
-          <Pressable style={styles.iconButton} onPress={() => navigation.goBack()}>
-            <MaterialCommunityIcons name="arrow-left" size={22} color={colors.darkGreen} />
-          </Pressable>
-          <View style={styles.headerText}>
-            <Text style={styles.greeting}>Weekly schedule</Text>
-            <Text style={styles.title}>Plan Your Meals</Text>
-          </View>
-        </View>
-
         <View style={styles.heroCard}>
           <View style={styles.heroIcon}>
             <MaterialCommunityIcons name="calendar-heart" size={28} color={colors.white} />
@@ -192,17 +160,10 @@ export function MealPlannerScreen() {
           <View style={styles.heroText}>
             <Text style={styles.heroTitle}>Breakfast, lunch, and dinner for the week</Text>
             <Text style={styles.heroSubtitle}>
-              Choose foods manually or auto-fill with your best health-based matches.
+              Choose foods manually from your best health-based matches.
             </Text>
           </View>
         </View>
-
-        <Button
-          title={saving ? 'Saving...' : 'Auto-fill smart week'}
-          onPress={autoFillWeek}
-          disabled={!profile || saving}
-          style={styles.autoFillButton}
-        />
 
         <ScrollView
           horizontal
@@ -250,6 +211,7 @@ export function MealPlannerScreen() {
         onClose={() => setEditingMeal(null)}
         onSelect={(foodId) => editingMeal && selectFood(editingMeal, foodId)}
       />
+      <AppBottomNav activeRoute="MealPlanner" />
     </SafeAreaView>
   );
 }
@@ -426,9 +388,6 @@ const styles = StyleSheet.create({
     ...typography.caption,
     color: colors.gray,
     marginTop: 3,
-  },
-  autoFillButton: {
-    marginBottom: spacing.md,
   },
   dayTabs: {
     gap: spacing.sm,

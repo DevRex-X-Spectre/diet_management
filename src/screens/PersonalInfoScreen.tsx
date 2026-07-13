@@ -26,6 +26,10 @@ import {
 } from '../types';
 import { colors, spacing, typography } from '../theme';
 import type { RootStackParamList } from '../types';
+import {
+  formatDateOfBirthInput,
+  validateDateOfBirth,
+} from '../utils/calculations';
 
 type NavProp = NativeStackNavigationProp<RootStackParamList, 'PersonalInfo'>;
 
@@ -39,19 +43,22 @@ const ACTIVITY_OPTIONS: ActivityLevel[] = [
 export function PersonalInfoScreen() {
   const navigation = useNavigation<NavProp>();
 
-  const [age, setAge] = useState('');
+  const [dateOfBirth, setDateOfBirth] = useState('');
   const [gender, setGender] = useState<'MALE' | 'FEMALE' | null>(null);
   const [heightCm, setHeightCm] = useState(170);
   const [weightKg, setWeightKg] = useState(70);
   const [activityLevel, setActivityLevel] = useState<ActivityLevel | null>(null);
-  const [ageError, setAgeError] = useState('');
+  const [dateOfBirthError, setDateOfBirthError] = useState('');
+
+  const getCalculatedAge = (): number | null => {
+    const result = validateDateOfBirth(dateOfBirth);
+    setDateOfBirthError(result.error);
+    return result.age;
+  };
 
   const validate = (): boolean => {
-    const ageNum = parseInt(age, 10);
-    if (isNaN(ageNum) || ageNum < 1 || ageNum > 120) {
-      setAgeError('Please enter a valid age (1-120)');
-      return false;
-    }
+    const age = getCalculatedAge();
+    if (age === null) return false;
     if (!gender) return false;
     if (!activityLevel) return false;
     return true;
@@ -62,11 +69,14 @@ export function PersonalInfoScreen() {
       if (!gender || !activityLevel) return;
     }
     if (!gender || !activityLevel) return;
+    const age = getCalculatedAge();
+    if (age === null) return;
 
     // Save progress for resume capability
     await saveOnboardingProgress({
       currentStep: 'conditions',
-      age: parseInt(age, 10),
+      dateOfBirth,
+      age,
       gender,
       heightCm,
       weightKg,
@@ -74,7 +84,8 @@ export function PersonalInfoScreen() {
     });
 
     navigation.navigate('HealthConditions', {
-      age: parseInt(age, 10),
+      dateOfBirth,
+      age,
       gender,
       heightCm,
       weightKg,
@@ -83,7 +94,7 @@ export function PersonalInfoScreen() {
   };
 
   const isValid =
-    age.length > 0 &&
+    dateOfBirth.length === 10 &&
     gender !== null &&
     activityLevel !== null;
 
@@ -108,16 +119,16 @@ export function PersonalInfoScreen() {
 
           <View style={styles.form}>
             <Input
-              label="How old are you?"
-              value={age}
+              label="Date of Birth"
+              value={dateOfBirth}
               onChangeText={(text) => {
-                setAge(text.replace(/[^0-9]/g, ''));
-                setAgeError('');
+                setDateOfBirth(formatDateOfBirthInput(text));
+                setDateOfBirthError('');
               }}
-              placeholder="e.g., 35"
+              placeholder="YYYY-MM-DD"
               keyboardType="number-pad"
-              maxLength={3}
-              error={ageError}
+              maxLength={10}
+              error={dateOfBirthError}
               iconName="calendar"
             />
 

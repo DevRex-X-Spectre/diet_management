@@ -46,3 +46,12 @@ Most food images below were downloaded from Wikimedia Commons search results for
 - groundnut-soup: File:Fufu in groundnut soup with fish.jpg (CC BY 2.0) by aripeskoe2. Source: https://commons.wikimedia.org/wiki/File:Fufu_in_groundnut_soup_with_fish.jpg
 - pepper-soup-light: File:Goat meat pepper soup served with bread.jpg (CC BY-SA 4.0) by Nancy Nwachukwu. Source: https://commons.wikimedia.org/wiki/File:Goat_meat_pepper_soup_served_with_bread.jpg
 - zobo-drink: File:Roselle (zobo leaves).jpg (CC BY 4.0) by Zmu'az4Z. Source: https://commons.wikimedia.org/wiki/File:Roselle_(zobo_leaves).jpg
+- water-yam: File:Water Yam.jpg (CC BY-SA 4.0) by Dappasolomon001. Source: https://commons.wikimedia.org/wiki/File:Water_Yam.jpg
+- egg-sauce: File:Boiled yam and egg sauce.jpg (CC BY-SA 4.0) by Sunday Glory. Source: https://commons.wikimedia.org/wiki/File:Boiled_yam_and_egg_sauce.jpg
+- oat-swallow: File:Fufu 1.jpg (CC BY-SA 4.0) by HarunaSylvester. Source: https://commons.wikimedia.org/wiki/File:Fufu_1.jpg
+- plantain-swallow: File:Plantain Fufu.jpg (CC BY-SA 4.0) by Enoch "Robot Boy" Appiah jr. Source: https://commons.wikimedia.org/wiki/File:Plantain_Fufu.jpg
+- plain-yogurt: File:Lakh au yaourt.jpg (CC BY-SA 4.0) by Cheikh cherif. Source: https://commons.wikimedia.org/wiki/File:Lakh_au_yaourt.jpg
+- groundnuts: File:Groundnut10.jpg (CC BY-SA 4.0) by Gausanchennai. Source: https://commons.wikimedia.org/wiki/File:Groundnut10.jpg
+- mixed-nuts: File:Mixed nuts bowl.jpg (CC BY-SA 3.0) by User:Melchoir. Source: https://commons.wikimedia.org/wiki/File:Mixed_nuts_bowl.jpg
+- unsweetened-tea: File:Cup of black tea.JPG (CC BY-SA 4.0) by AntanO. Source: https://commons.wikimedia.org/wiki/File:Cup_of_black_tea.JPG
+- garden-eggs: File:African eggplant also known as garden eggs 01.jpg (CC BY-SA 4.0) by Zahara5555. Source: https://commons.wikimedia.org/wiki/File:African_eggplant_also_known_as_garden_eggs_01.jpg

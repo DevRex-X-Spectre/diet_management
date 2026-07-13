@@ -32,6 +32,7 @@ export interface LocalAuthAccount {
 export interface StoredProfile {
   id: string;
   email: string;
+  dateOfBirth?: string;
   age: number;
   gender: Gender;
   heightCm: number;
@@ -48,6 +49,7 @@ export interface StoredProfile {
 export interface OnboardingProgress {
   currentStep: 'welcome' | 'auth' | 'personalInfo' | 'conditions' | 'summary';
   email?: string;
+  dateOfBirth?: string;
   age?: number;
   gender?: Gender;
   heightCm?: number;

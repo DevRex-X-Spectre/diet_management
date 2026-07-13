@@ -43,6 +43,7 @@ export function HealthConditionsScreen() {
     const parentParams = route.params;
     await saveOnboardingProgress({
       currentStep: 'summary',
+      dateOfBirth: parentParams.dateOfBirth,
       age: parentParams.age,
       gender: parentParams.gender,
       heightCm: parentParams.heightCm,
@@ -52,6 +53,7 @@ export function HealthConditionsScreen() {
     });
 
     navigation.navigate('ProfileSummary', {
+      dateOfBirth: parentParams.dateOfBirth,
       age: parentParams.age,
       gender: parentParams.gender,
       heightCm: parentParams.heightCm,

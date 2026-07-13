@@ -394,5 +394,86 @@
     "license": "CC BY 4.0",
     "author": "Zmu'az4Z",
     "file": "assets/foods/zobo-drink.jpg"
+  },
+  {
+    "id": "water-yam",
+    "query": "water yam Dioscorea alata tuber",
+    "title": "File:Water Yam.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Water_Yam.jpg",
+    "license": "CC BY-SA 4.0",
+    "author": "Dappasolomon001",
+    "file": "assets/foods/water-yam.jpg"
+  },
+  {
+    "id": "egg-sauce",
+    "query": "Nigerian egg sauce food",
+    "title": "File:Boiled yam and egg sauce.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Boiled_yam_and_egg_sauce.jpg",
+    "license": "CC BY-SA 4.0",
+    "author": "Sunday Glory",
+    "file": "assets/foods/egg-sauce.jpg"
+  },
+  {
+    "id": "oat-swallow",
+    "query": "fufu swallow food",
+    "title": "File:Fufu 1.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Fufu_1.jpg",
+    "license": "CC BY-SA 4.0",
+    "author": "HarunaSylvester",
+    "file": "assets/foods/oat-swallow.jpg"
+  },
+  {
+    "id": "plantain-swallow",
+    "query": "plantain fufu food",
+    "title": "File:Plantain Fufu.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Plantain_Fufu.jpg",
+    "license": "CC BY-SA 4.0",
+    "author": "Enoch Robot Boy Appiah jr.",
+    "file": "assets/foods/plantain-swallow.jpg"
+  },
+  {
+    "id": "plain-yogurt",
+    "query": "plain yogurt bowl",
+    "title": "File:Lakh au yaourt.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Lakh_au_yaourt.jpg",
+    "license": "CC BY-SA 4.0",
+    "author": "Cheikh cherif",
+    "file": "assets/foods/plain-yogurt.jpg"
+  },
+  {
+    "id": "groundnuts",
+    "query": "groundnuts peanuts bowl",
+    "title": "File:Groundnut10.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Groundnut10.jpg",
+    "license": "CC BY-SA 4.0",
+    "author": "Gausanchennai",
+    "file": "assets/foods/groundnuts.jpg"
+  },
+  {
+    "id": "mixed-nuts",
+    "query": "mixed nuts bowl",
+    "title": "File:Mixed nuts bowl.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Mixed_nuts_bowl.jpg",
+    "license": "CC BY-SA 3.0",
+    "author": "User:Melchoir",
+    "file": "assets/foods/mixed-nuts.jpg"
+  },
+  {
+    "id": "unsweetened-tea",
+    "query": "black tea cup",
+    "title": "File:Cup of black tea.JPG",
+    "source": "https://commons.wikimedia.org/wiki/File:Cup_of_black_tea.JPG",
+    "license": "CC BY-SA 4.0",
+    "author": "AntanO",
+    "file": "assets/foods/unsweetened-tea.jpg"
+  },
+  {
+    "id": "garden-eggs",
+    "query": "African garden eggs eggplant",
+    "title": "File:African eggplant also known as garden eggs 01.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:African_eggplant_also_known_as_garden_eggs_01.jpg",
+    "license": "CC BY-SA 4.0",
+    "author": "Zahara5555",
+    "file": "assets/foods/garden-eggs.jpg"
   }
 ]
