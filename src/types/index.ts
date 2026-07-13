@@ -139,4 +139,7 @@ export type RootStackParamList = {
     healthConditions: HealthCondition[];
   };
   Home: undefined;
+  Recommendations: undefined;
+  MealPlanner: undefined;
+  Profile: undefined;
 };

@@ -11,6 +11,7 @@ import {
   Gender,
   HealthCondition,
 } from '../types';
+import type { MealSlot } from './recommendation/RecommendationEngine';
 
 const STORAGE_KEYS = {
   PROFILE: '@bigben/profile',
@@ -18,6 +19,7 @@ const STORAGE_KEYS = {
   AUTH_TOKEN: '@bigben/auth_token',
   LOCAL_AUTH_ACCOUNTS: '@bigben/local_auth_accounts',
   CURRENT_USER_EMAIL: '@bigben/current_user_email',
+  WEEKLY_MEAL_PLAN: '@bigben/weekly_meal_plan',
 } as const;
 
 export interface LocalAuthAccount {
@@ -52,6 +54,56 @@ export interface OnboardingProgress {
   weightKg?: number;
   activityLevel?: ActivityLevel;
   healthConditions?: HealthCondition[];
+}
+
+export type WeekDayKey =
+  | 'monday'
+  | 'tuesday'
+  | 'wednesday'
+  | 'thursday'
+  | 'friday'
+  | 'saturday'
+  | 'sunday';
+
+export interface ScheduledMeal {
+  foodId: string | null;
+}
+
+export type DayMealPlan = Record<MealSlot, ScheduledMeal>;
+
+export interface WeeklyMealPlan {
+  days: Record<WeekDayKey, DayMealPlan>;
+  updatedAt: string;
+}
+
+export const WEEK_DAYS: { key: WeekDayKey; label: string; shortLabel: string }[] = [
+  { key: 'monday', label: 'Monday', shortLabel: 'Mon' },
+  { key: 'tuesday', label: 'Tuesday', shortLabel: 'Tue' },
+  { key: 'wednesday', label: 'Wednesday', shortLabel: 'Wed' },
+  { key: 'thursday', label: 'Thursday', shortLabel: 'Thu' },
+  { key: 'friday', label: 'Friday', shortLabel: 'Fri' },
+  { key: 'saturday', label: 'Saturday', shortLabel: 'Sat' },
+  { key: 'sunday', label: 'Sunday', shortLabel: 'Sun' },
+];
+
+export function createEmptyWeeklyMealPlan(): WeeklyMealPlan {
+  const emptyDay: DayMealPlan = {
+    breakfast: { foodId: null },
+    lunch: { foodId: null },
+    dinner: { foodId: null },
+  };
+
+  return {
+    days: WEEK_DAYS.reduce((days, day) => ({
+      ...days,
+      [day.key]: {
+        breakfast: { ...emptyDay.breakfast },
+        lunch: { ...emptyDay.lunch },
+        dinner: { ...emptyDay.dinner },
+      },
+    }), {} as Record<WeekDayKey, DayMealPlan>),
+    updatedAt: new Date().toISOString(),
+  };
 }
 
 function normalizeEmail(email: string): string {
@@ -158,6 +210,45 @@ export async function loadProfile(): Promise<StoredProfile | null> {
   } catch (error) {
     console.error('Failed to load profile:', error);
     return null;
+  }
+}
+
+export async function updateProfile(profile: StoredProfile): Promise<void> {
+  await saveProfile({
+    ...profile,
+    createdAt: profile.createdAt,
+  });
+}
+
+export async function loadWeeklyMealPlan(): Promise<WeeklyMealPlan> {
+  try {
+    const data = await AsyncStorage.getItem(STORAGE_KEYS.WEEKLY_MEAL_PLAN);
+    if (!data) return createEmptyWeeklyMealPlan();
+
+    const parsed = JSON.parse(data) as WeeklyMealPlan;
+    const fallback = createEmptyWeeklyMealPlan();
+    return {
+      updatedAt: parsed.updatedAt ?? fallback.updatedAt,
+      days: {
+        ...fallback.days,
+        ...parsed.days,
+      },
+    };
+  } catch (error) {
+    console.error('Failed to load weekly meal plan:', error);
+    return createEmptyWeeklyMealPlan();
+  }
+}
+
+export async function saveWeeklyMealPlan(plan: WeeklyMealPlan): Promise<void> {
+  try {
+    await AsyncStorage.setItem(
+      STORAGE_KEYS.WEEKLY_MEAL_PLAN,
+      JSON.stringify({ ...plan, updatedAt: new Date().toISOString() })
+    );
+  } catch (error) {
+    console.error('Failed to save weekly meal plan:', error);
+    throw error;
   }
 }
 

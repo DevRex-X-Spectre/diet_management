@@ -13,8 +13,11 @@ import type { RootStackParamList } from '../types';
 import { AuthScreen } from '../screens/AuthScreen';
 import { HealthConditionsScreen } from '../screens/HealthConditionsScreen';
 import { HomeScreen } from '../screens/HomeScreen';
+import { MealPlannerScreen } from '../screens/MealPlannerScreen';
 import { PersonalInfoScreen } from '../screens/PersonalInfoScreen';
+import { ProfileScreen } from '../screens/ProfileScreen';
 import { ProfileSummaryScreen } from '../screens/ProfileSummaryScreen';
+import { RecommendationsScreen } from '../screens/RecommendationsScreen';
 import { WelcomeScreen } from '../screens/WelcomeScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -157,6 +160,9 @@ export function RootNavigator() {
           }
         />
         <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Recommendations" component={RecommendationsScreen} />
+        <Stack.Screen name="MealPlanner" component={MealPlannerScreen} />
+        <Stack.Screen name="Profile" component={ProfileScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -1,31 +1,37 @@
-import React, { useEffect, useState } from 'react';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
+  ActivityIndicator,
   Image,
-  Modal,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
   View,
-  ActivityIndicator,
-  Pressable,
-  useWindowDimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Button } from '../components/Button';
-import { FoodCard } from '../components/FoodCard';
-import { borderRadius, colors, spacing, typography } from '../theme';
-import { clearAuthSession, loadProfile, StoredProfile } from '../services/storage';
-import { getTopRecommendations } from '../services/recommendation/RecommendationEngine';
-import type { RecommendedFood } from '../types/food';
-import { HEALTH_CONDITION_LABELS } from '../types';
 import { foodImages } from '../data/foodImages';
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { RootStackParamList } from '../types';
+import { getFoodById } from '../data/nigerianFoods';
+import {
+  getRecommendationForFood,
+  MealSlot,
+} from '../services/recommendation/RecommendationEngine';
+import {
+  loadProfile,
+  loadWeeklyMealPlan,
+  StoredProfile,
+  WEEK_DAYS,
+  WeekDayKey,
+  WeeklyMealPlan,
+} from '../services/storage';
+import { borderRadius, colors, spacing, typography } from '../theme';
+import { HEALTH_CONDITION_LABELS, RootStackParamList } from '../types';
 
 type NavProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
-type MealSlot = 'breakfast' | 'lunch' | 'dinner';
+
+const MEALS: MealSlot[] = ['breakfast', 'lunch', 'dinner'];
 
 const MEAL_LABELS: Record<MealSlot, string> = {
   breakfast: 'Breakfast',
@@ -39,367 +45,237 @@ const MEAL_ICONS: Record<MealSlot, React.ComponentProps<typeof MaterialCommunity
   dinner: 'bowl-mix-outline',
 };
 
-function getMealRecommendations(
-  recommendations: RecommendedFood[],
-  meal: MealSlot
-): RecommendedFood[] {
-  return recommendations.filter((rec) => {
-    const { category, id, nutrition } = rec.food;
-
-    if (meal === 'breakfast') {
-      return (
-        ['boiled-eggs', 'oats', 'greek-yogurt', 'low-fat-milk', 'whole-wheat-bread', 'boiled-beans', 'moi-moi', 'apple', 'orange', 'banana', 'avocado', 'tiger-nuts'].includes(id) ||
-        (category === 'FRUIT' && nutrition.calories <= 170)
-      );
-    }
-
-    if (meal === 'lunch') {
-      return (
-        ['PROTEIN', 'GRAIN', 'SOUP', 'SWALLOW', 'VEGETABLE'].includes(category) &&
-        !['agege-bread'].includes(id)
-      );
-    }
-
-    return (
-      ['PROTEIN', 'SOUP', 'VEGETABLE', 'BEVERAGE', 'FRUIT'].includes(category) &&
-      nutrition.calories <= 230 &&
-      nutrition.sodium <= 400
-    );
-  }).slice(0, meal === 'lunch' ? 12 : 10);
+function getTodayKey(): WeekDayKey {
+  const index = new Date().getDay();
+  const day = WEEK_DAYS[index === 0 ? 6 : index - 1];
+  return day.key;
 }
 
-function getMealNote(recommendation: RecommendedFood, meal: MealSlot): string {
-  const { food } = recommendation;
-  const hasCarbs = food.nutrition.carbohydrates >= 20;
-
-  if (meal === 'breakfast') {
-    if (food.category === 'FRUIT') return 'Take with protein or yogurt to slow blood sugar rise.';
-    if (food.category === 'GRAIN') return 'Use a small bowl and add protein such as egg or yogurt.';
-    return 'Good morning protein/fiber choice. Keep added sugar low.';
-  }
-
-  if (meal === 'lunch') {
-    if (food.category === 'SWALLOW' || hasCarbs) {
-      return 'Use a controlled portion and fill the rest of the plate with vegetables and lean protein.';
-    }
-    return 'Works well as the main lunch protein or vegetable side.';
-  }
-
-  if (hasCarbs) return 'Keep the dinner portion small and pair with vegetables.';
-  return 'Light dinner option. Prefer low salt preparation.';
-}
-
-/**
- * Home screen showing personalized food recommendations.
- * Loads patient profile and displays recommended foods in a grid.
- */
 export function HomeScreen() {
   const navigation = useNavigation<NavProp>();
-  const { width } = useWindowDimensions();
   const [profile, setProfile] = useState<StoredProfile | null>(null);
-  const [recommendations, setRecommendations] = useState<RecommendedFood[]>([]);
-  const [selectedMeal, setSelectedMeal] = useState<MealSlot>('breakfast');
-  const [selectedRecommendation, setSelectedRecommendation] = useState<RecommendedFood | null>(null);
+  const [plan, setPlan] = useState<WeeklyMealPlan | null>(null);
+  const [selectedDay, setSelectedDay] = useState<WeekDayKey>(getTodayKey());
   const [loading, setLoading] = useState(true);
-  const cardWidth = width >= 720
-    ? (width - spacing.lg * 2 - spacing.md * 2) / 3
-    : (width - spacing.lg * 2 - spacing.md) / 2;
 
   useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', loadData);
     loadData();
-  }, []);
+    return unsubscribe;
+  }, [navigation]);
+
+  const patientProfile = useMemo(() => {
+    if (!profile) return null;
+    return {
+      id: profile.id,
+      email: profile.email,
+      age: profile.age,
+      gender: profile.gender,
+      heightCm: profile.heightCm,
+      weightKg: profile.weightKg,
+      activityLevel: profile.activityLevel,
+      healthConditions: profile.healthConditions,
+      bmi: profile.bmi,
+      bmiCategory: profile.bmiCategory as any,
+      bmr: profile.bmr,
+      tdee: profile.tdee,
+    };
+  }, [profile]);
 
   const loadData = async () => {
     try {
-      const savedProfile = await loadProfile();
+      const [savedProfile, savedPlan] = await Promise.all([
+        loadProfile(),
+        loadWeeklyMealPlan(),
+      ]);
       setProfile(savedProfile);
-
-      if (savedProfile) {
-        // Convert StoredProfile to PatientProfile for the engine
-        const patientProfile = {
-          id: savedProfile.id,
-          email: savedProfile.email,
-          age: savedProfile.age,
-          gender: savedProfile.gender,
-          heightCm: savedProfile.heightCm,
-          weightKg: savedProfile.weightKg,
-          activityLevel: savedProfile.activityLevel,
-          healthConditions: savedProfile.healthConditions,
-          bmi: savedProfile.bmi,
-          bmiCategory: savedProfile.bmiCategory as any,
-          bmr: savedProfile.bmr,
-          tdee: savedProfile.tdee,
-        };
-
-        const recs = getTopRecommendations(patientProfile, 20);
-        setRecommendations(recs);
-      }
+      setPlan(savedPlan);
     } catch (error) {
-      console.error('Failed to load data:', error);
+      console.error('Failed to load dashboard:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSignOut = async () => {
-    await clearAuthSession();
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'Welcome' }],
-    });
-  };
-
-  if (loading) {
+  if (loading || !plan) {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={colors.darkGreen} />
-          <Text style={styles.loadingText}>Loading your recommendations...</Text>
+          <Text style={styles.loadingText}>Loading your meal week...</Text>
         </View>
       </SafeAreaView>
     );
   }
 
   const conditionsSummary = profile?.healthConditions
-    .map((c) => HEALTH_CONDITION_LABELS[c as keyof typeof HEALTH_CONDITION_LABELS])
+    .map((c) => HEALTH_CONDITION_LABELS[c])
     .join(', ') || 'No conditions set';
-  const mealRecommendations = getMealRecommendations(recommendations, selectedMeal);
+
+  const scheduledCount = WEEK_DAYS.reduce((count, day) => (
+    count + MEALS.filter((meal) => plan.days[day.key][meal].foodId).length
+  ), 0);
+
+  const dayLabel = WEEK_DAYS.find((day) => day.key === selectedDay)?.label ?? 'Today';
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Header */}
         <View style={styles.header}>
           <View>
             <Text style={styles.greeting}>Hello</Text>
-            <Text style={styles.title}>Recommended for You</Text>
+            <Text style={styles.title}>Your Meal Week</Text>
           </View>
-          <Button
-            title="Sign Out"
-            variant="outline"
-            onPress={handleSignOut}
-            style={styles.signOutButton}
-          />
+          <Pressable style={styles.profileButton} onPress={() => navigation.navigate('Profile')}>
+            <MaterialCommunityIcons name="account-circle" size={28} color={colors.darkGreen} />
+          </Pressable>
         </View>
 
-        {/* Conditions Summary */}
-        <View style={styles.conditionsBanner}>
-          <Text style={styles.conditionsLabel}>Based on your conditions:</Text>
-          <Text style={styles.conditionsText}>{conditionsSummary}</Text>
+        <View style={styles.heroCard}>
+          <View style={styles.heroTopRow}>
+            <View>
+              <Text style={styles.heroEyebrow}>This week</Text>
+              <Text style={styles.heroTitle}>{scheduledCount}/21 meals scheduled</Text>
+            </View>
+            <View style={styles.heroIcon}>
+              <MaterialCommunityIcons name="calendar-check" size={28} color={colors.white} />
+            </View>
+          </View>
+          <Text style={styles.heroSubtitle}>
+            Your dashboard now follows your weekly plan. Edit anytime as your week changes.
+          </Text>
         </View>
 
-        {/* Stats Row */}
         {profile && (
           <View style={styles.statsRow}>
             <View style={styles.statItem}>
               <Text style={styles.statValue}>{profile.tdee}</Text>
-              <Text style={styles.statLabel}>Daily Target (cal)</Text>
+              <Text style={styles.statLabel}>Daily cal</Text>
             </View>
             <View style={styles.statItem}>
               <Text style={styles.statValue}>{profile.bmi}</Text>
               <Text style={styles.statLabel}>BMI</Text>
             </View>
             <View style={styles.statItem}>
-              <Text style={styles.statValue}>{recommendations.length}</Text>
-              <Text style={styles.statLabel}>Foods Found</Text>
+              <Text style={styles.statValue}>{profile.healthConditions.length}</Text>
+              <Text style={styles.statLabel}>Conditions</Text>
             </View>
           </View>
         )}
 
-        {/* Meal Plan */}
-        <View style={styles.gridHeader}>
-          <Text style={styles.gridTitle}>Meal plan suggestions</Text>
-          <Text style={styles.gridSubtitle}>
-            Choose a meal, then tap a food to see why it fits your health profile.
-          </Text>
+        <View style={styles.conditionsBanner}>
+          <Text style={styles.conditionsLabel}>Health focus</Text>
+          <Text style={styles.conditionsText}>{conditionsSummary}</Text>
         </View>
 
-        <View style={styles.mealTabs}>
-          {(['breakfast', 'lunch', 'dinner'] as MealSlot[]).map((meal) => {
-            const selected = selectedMeal === meal;
+        <View style={styles.actionGrid}>
+          <DashboardAction
+            icon="calendar-edit"
+            title="Edit Plan"
+            subtitle="Schedule week"
+            onPress={() => navigation.navigate('MealPlanner')}
+          />
+          <DashboardAction
+            icon="food-apple-outline"
+            title="Explore"
+            subtitle="Find foods"
+            onPress={() => navigation.navigate('Recommendations')}
+          />
+        </View>
+
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.dayTabs}
+        >
+          {WEEK_DAYS.map((day) => {
+            const selected = selectedDay === day.key;
             return (
               <Pressable
-                key={meal}
-                onPress={() => setSelectedMeal(meal)}
-                style={[styles.mealTab, selected && styles.mealTabSelected]}
+                key={day.key}
+                onPress={() => setSelectedDay(day.key)}
+                style={[styles.dayTab, selected && styles.dayTabSelected]}
               >
-                <MaterialCommunityIcons
-                  name={MEAL_ICONS[meal]}
-                  size={20}
-                  color={selected ? colors.white : colors.darkGreen}
-                />
-                <Text style={[styles.mealTabText, selected && styles.mealTabTextSelected]}>
-                  {MEAL_LABELS[meal]}
+                <Text style={[styles.dayTabText, selected && styles.dayTabTextSelected]}>
+                  {day.shortLabel}
                 </Text>
               </Pressable>
             );
           })}
+        </ScrollView>
+
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>{dayLabel}</Text>
+          <Text style={styles.sectionSubtitle}>Your scheduled foods for the day.</Text>
         </View>
 
-        {mealRecommendations.length === 0 ? (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyTitle}>No recommendations found</Text>
-            <Text style={styles.emptyText}>
-              We couldn't find foods that match all your conditions.
-              Try adjusting your health conditions in your profile.
-            </Text>
-          </View>
-        ) : (
-          <View style={styles.grid}>
-            {mealRecommendations.map((rec) => (
-              <View key={rec.food.id} style={[styles.gridItem, { width: cardWidth }]}>
-                <FoodCard
-                  recommendation={rec}
-                  mealNote={getMealNote(rec, selectedMeal)}
-                  onPress={() => setSelectedRecommendation(rec)}
-                />
-              </View>
-            ))}
-          </View>
-        )}
+        <View style={styles.mealList}>
+          {MEALS.map((meal) => {
+            const foodId = plan.days[selectedDay][meal].foodId;
+            const food = foodId ? getFoodById(foodId) : undefined;
+            const recommendation = foodId && patientProfile
+              ? getRecommendationForFood(foodId, patientProfile)
+              : null;
 
-        {/* Food Categories Section */}
-        <View style={styles.categoriesSection}>
-          <Text style={styles.sectionTitle}>Browse by Category</Text>
-          <View style={styles.categoryGrid}>
-            <CategoryCard icon="food-drumstick-outline" label="Proteins" count={12} />
-            <CategoryCard icon="leaf" label="Vegetables" count={10} />
-            <CategoryCard icon="rice" label="Grains" count={10} />
-            <CategoryCard icon="food-apple-outline" label="Fruits" count={6} />
-            <CategoryCard icon="bowl-mix-outline" label="Soups" count={8} />
-            <CategoryCard icon="cup-water" label="Dairy" count={3} />
-          </View>
+            return (
+              <Pressable
+                key={meal}
+                style={styles.mealCard}
+                onPress={() => navigation.navigate('MealPlanner')}
+              >
+                <View style={styles.mealHeader}>
+                  <View style={styles.mealLabelRow}>
+                    <MaterialCommunityIcons name={MEAL_ICONS[meal]} size={20} color={colors.darkGreen} />
+                    <Text style={styles.mealLabel}>{MEAL_LABELS[meal]}</Text>
+                  </View>
+                  <MaterialCommunityIcons name="chevron-right" size={22} color={colors.gray} />
+                </View>
+
+                {food ? (
+                  <View style={styles.foodRow}>
+                    <Image source={foodImages[food.id]} style={styles.foodImage} resizeMode="cover" />
+                    <View style={styles.foodInfo}>
+                      <Text style={styles.foodName}>{food.name}</Text>
+                      <Text style={styles.foodMeta}>
+                        {food.servingSize} • {food.nutrition.calories} cal
+                        {recommendation ? ` • Score ${recommendation.score}` : ''}
+                      </Text>
+                    </View>
+                  </View>
+                ) : (
+                  <View style={styles.emptyMeal}>
+                    <MaterialCommunityIcons name="plus-circle-outline" size={20} color={colors.darkGreen} />
+                    <Text style={styles.emptyMealText}>No food scheduled yet</Text>
+                  </View>
+                )}
+              </Pressable>
+            );
+          })}
         </View>
       </ScrollView>
-
-      <FoodDetailModal
-        recommendation={selectedRecommendation}
-        meal={selectedMeal}
-        onClose={() => setSelectedRecommendation(null)}
-      />
     </SafeAreaView>
   );
 }
 
-function FoodDetailModal({
-  recommendation,
-  meal,
-  onClose,
-}: {
-  recommendation: RecommendedFood | null;
-  meal: MealSlot;
-  onClose: () => void;
-}) {
-  if (!recommendation) {
-    return null;
-  }
-
-  const { food, score, reasons, warnings } = recommendation;
-  const mealNote = getMealNote(recommendation, meal);
-
-  return (
-    <Modal
-      visible
-      transparent
-      animationType="fade"
-      statusBarTranslucent
-      onRequestClose={onClose}
-    >
-      <View style={styles.modalRoot}>
-        <Pressable style={styles.modalBackdrop} onPress={onClose} />
-
-        <View style={styles.modalSheet}>
-          <Image source={foodImages[food.id]} style={styles.modalImage} resizeMode="cover" />
-
-          <ScrollView contentContainerStyle={styles.modalContent}>
-            <View style={styles.modalTitleRow}>
-              <View style={styles.modalTitleText}>
-                <Text style={styles.modalName}>{food.name}</Text>
-                {food.localName && <Text style={styles.modalLocalName}>{food.localName}</Text>}
-                <Text style={styles.modalServing}>{food.servingSize}</Text>
-              </View>
-              <View style={styles.modalScore}>
-                <Text style={styles.modalScoreValue}>{score}</Text>
-                <Text style={styles.modalScoreLabel}>score</Text>
-              </View>
-            </View>
-
-            <View style={styles.modalMealNote}>
-              <MaterialCommunityIcons
-                name={MEAL_ICONS[meal]}
-                size={18}
-                color={colors.darkGreen}
-              />
-              <Text style={styles.modalMealNoteText}>{mealNote}</Text>
-            </View>
-
-            {reasons.length > 0 && (
-              <View style={styles.modalSection}>
-                <Text style={styles.modalSectionTitle}>Why this is recommended</Text>
-                {reasons.map((reason, index) => (
-                  <View key={index} style={styles.modalReasonRow}>
-                    <MaterialCommunityIcons name="check-circle" size={16} color={colors.darkGreen} />
-                    <Text style={styles.modalReasonText}>{reason}</Text>
-                  </View>
-                ))}
-              </View>
-            )}
-
-            {warnings.length > 0 && (
-              <View style={styles.modalWarningSection}>
-                <Text style={styles.modalSectionTitle}>Notes</Text>
-                {warnings.map((warning, index) => (
-                  <Text key={index} style={styles.modalWarningText}>
-                    {warning}
-                  </Text>
-                ))}
-              </View>
-            )}
-
-            <View style={styles.modalSection}>
-              <Text style={styles.modalSectionTitle}>Nutrition snapshot</Text>
-              <View style={styles.modalNutritionRow}>
-                <NutritionPill label="Cal" value={food.nutrition.calories} />
-                <NutritionPill label="Protein" value={`${food.nutrition.protein}g`} />
-                <NutritionPill label="Fiber" value={`${food.nutrition.fiber}g`} />
-                <NutritionPill label="Sodium" value={`${food.nutrition.sodium}mg`} />
-              </View>
-            </View>
-          </ScrollView>
-
-          <Pressable style={styles.modalCloseButton} onPress={onClose}>
-            <MaterialCommunityIcons name="close" size={22} color={colors.black} />
-          </Pressable>
-        </View>
-      </View>
-    </Modal>
-  );
-}
-
-function NutritionPill({ label, value }: { label: string; value: string | number }) {
-  return (
-    <View style={styles.modalNutritionPill}>
-      <Text style={styles.modalNutritionValue}>{value}</Text>
-      <Text style={styles.modalNutritionLabel}>{label}</Text>
-    </View>
-  );
-}
-
-function CategoryCard({
+function DashboardAction({
   icon,
-  label,
-  count,
+  title,
+  subtitle,
+  onPress,
 }: {
   icon: React.ComponentProps<typeof MaterialCommunityIcons>['name'];
-  label: string;
-  count: number;
+  title: string;
+  subtitle: string;
+  onPress: () => void;
 }) {
   return (
-    <View style={styles.categoryCard}>
-      <MaterialCommunityIcons name={icon} size={28} color={colors.darkGreen} />
-      <Text style={styles.categoryLabel}>{label}</Text>
-      <Text style={styles.categoryCount}>{count} items</Text>
-    </View>
+    <Pressable style={styles.actionCard} onPress={onPress}>
+      <View style={styles.actionIcon}>
+        <MaterialCommunityIcons name={icon} size={24} color={colors.darkGreen} />
+      </View>
+      <Text style={styles.actionTitle}>{title}</Text>
+      <Text style={styles.actionSubtitle}>{subtitle}</Text>
+    </Pressable>
   );
 }
 
@@ -414,8 +290,8 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   loadingText: {
     ...typography.body,
@@ -425,27 +301,87 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     paddingVertical: spacing.lg,
   },
   greeting: {
     fontSize: 16,
     color: colors.darkGreen,
-    fontWeight: '500',
+    fontWeight: '600',
   },
   title: {
     ...typography.h1,
     color: colors.black,
   },
-  signOutButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    minHeight: 40,
+  profileButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: colors.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  heroCard: {
+    backgroundColor: colors.darkGreen,
+    borderRadius: borderRadius.lg,
+    padding: spacing.lg,
+    marginBottom: spacing.md,
+  },
+  heroTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  heroEyebrow: {
+    fontSize: 13,
+    color: colors.mediumGreen,
+    fontWeight: '700',
+  },
+  heroTitle: {
+    fontSize: 22,
+    color: colors.white,
+    fontWeight: '800',
+    marginTop: 2,
+  },
+  heroIcon: {
+    width: 54,
+    height: 54,
+    borderRadius: 27,
+    backgroundColor: 'rgba(255, 255, 255, 0.18)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  heroSubtitle: {
+    ...typography.caption,
+    color: colors.white,
+    marginTop: spacing.sm,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    marginBottom: spacing.md,
+  },
+  statItem: {
+    flex: 1,
+    backgroundColor: colors.white,
+    borderRadius: borderRadius.md,
+    padding: spacing.md,
+    alignItems: 'center',
+  },
+  statValue: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: colors.darkGreen,
+  },
+  statLabel: {
+    fontSize: 11,
+    color: colors.gray,
+    marginTop: 2,
   },
   conditionsBanner: {
     backgroundColor: colors.mediumGreen,
     padding: spacing.md,
-    borderRadius: 12,
+    borderRadius: borderRadius.md,
     marginBottom: spacing.md,
   },
   conditionsLabel: {
@@ -455,279 +391,141 @@ const styles = StyleSheet.create({
   },
   conditionsText: {
     fontSize: 14,
-    fontWeight: '600',
-    color: colors.black,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: colors.white,
-    padding: spacing.md,
-    borderRadius: 12,
-    marginBottom: spacing.lg,
-    shadowColor: colors.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  statItem: {
-    alignItems: 'center',
-  },
-  statValue: {
-    fontSize: 24,
     fontWeight: '700',
-    color: colors.darkGreen,
-  },
-  statLabel: {
-    fontSize: 11,
-    color: colors.gray,
-    marginTop: 2,
-  },
-  gridHeader: {
-    marginBottom: spacing.md,
-  },
-  gridTitle: {
-    ...typography.h2,
     color: colors.black,
-    marginBottom: 4,
   },
-  gridSubtitle: {
-    ...typography.caption,
-    color: colors.gray,
-  },
-  mealTabs: {
+  actionGrid: {
     flexDirection: 'row',
-    gap: spacing.sm,
-    marginBottom: spacing.md,
+    gap: spacing.md,
+    marginBottom: spacing.lg,
   },
-  mealTab: {
+  actionCard: {
     flex: 1,
-    minHeight: 44,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.darkGreen,
+    backgroundColor: colors.white,
+    borderRadius: borderRadius.lg,
+    padding: spacing.md,
+    minHeight: 116,
+  },
+  actionIcon: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: colors.lightGreen,
     alignItems: 'center',
     justifyContent: 'center',
-    flexDirection: 'row',
-    gap: spacing.xs,
-    backgroundColor: colors.white,
-  },
-  mealTabSelected: {
-    backgroundColor: colors.darkGreen,
-  },
-  mealTabText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: colors.darkGreen,
-  },
-  mealTabTextSelected: {
-    color: colors.white,
-  },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.md,
-    alignItems: 'flex-start',
-  },
-  gridItem: {
-  },
-  emptyState: {
-    alignItems: 'center',
-    padding: spacing.xl,
-    backgroundColor: colors.white,
-    borderRadius: 12,
-  },
-  emptyTitle: {
-    ...typography.h3,
-    color: colors.black,
     marginBottom: spacing.sm,
   },
-  emptyText: {
-    ...typography.body,
-    color: colors.gray,
-    textAlign: 'center',
-  },
-  categoriesSection: {
-    marginTop: spacing.xl,
-  },
-  sectionTitle: {
-    ...typography.h3,
+  actionTitle: {
+    fontSize: 16,
+    fontWeight: '800',
     color: colors.black,
+  },
+  actionSubtitle: {
+    ...typography.caption,
+    color: colors.gray,
+    marginTop: 2,
+  },
+  dayTabs: {
+    gap: spacing.sm,
+    paddingBottom: spacing.md,
+  },
+  dayTab: {
+    minWidth: 54,
+    minHeight: 42,
+    borderRadius: 21,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.mediumGreen,
+  },
+  dayTabSelected: {
+    backgroundColor: colors.darkGreen,
+    borderColor: colors.darkGreen,
+  },
+  dayTabText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: colors.darkGreen,
+  },
+  dayTabTextSelected: {
+    color: colors.white,
+  },
+  sectionHeader: {
     marginBottom: spacing.md,
   },
-  categoryGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-  },
-  categoryCard: {
-    backgroundColor: colors.white,
-    padding: spacing.md,
-    borderRadius: 12,
-    alignItems: 'center',
-    flexBasis: '31%',
-    flexGrow: 1,
-    minHeight: 92,
-    shadowColor: colors.black,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-    gap: 4,
-  },
-  categoryLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: colors.black,
-  },
-  categoryCount: {
-    fontSize: 10,
-    color: colors.gray,
-  },
-  modalRoot: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: spacing.lg,
-  },
-  modalBackdrop: {
-    ...StyleSheet.absoluteFill,
-    backgroundColor: 'rgba(0, 0, 0, 0.45)',
-  },
-  modalSheet: {
-    maxHeight: '86%',
-    backgroundColor: colors.white,
-    borderRadius: borderRadius.xl,
-    overflow: 'hidden',
-  },
-  modalImage: {
-    width: '100%',
-    height: 176,
-    backgroundColor: colors.lightGray,
-  },
-  modalContent: {
-    padding: spacing.lg,
-    paddingBottom: spacing.xl,
-    gap: spacing.md,
-  },
-  modalTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: spacing.md,
-  },
-  modalTitleText: {
-    flex: 1,
-  },
-  modalName: {
+  sectionTitle: {
     ...typography.h2,
     color: colors.black,
   },
-  modalLocalName: {
+  sectionSubtitle: {
     ...typography.caption,
     color: colors.gray,
-    fontStyle: 'normal',
-    marginTop: 2,
   },
-  modalServing: {
-    ...typography.caption,
-    color: colors.gray,
-    marginTop: 4,
+  mealList: {
+    gap: spacing.md,
   },
-  modalScore: {
-    width: 58,
-    height: 58,
-    borderRadius: borderRadius.md,
-    borderWidth: 2,
-    borderColor: colors.darkGreen,
-    backgroundColor: colors.lightGreen,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  modalScoreValue: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: colors.darkGreen,
-  },
-  modalScoreLabel: {
-    fontSize: 9,
-    fontWeight: '600',
-    color: colors.darkGreen,
-    textTransform: 'uppercase',
-  },
-  modalMealNote: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-    backgroundColor: colors.lightGreen,
-    borderRadius: 12,
-    padding: spacing.md,
-  },
-  modalMealNoteText: {
-    flex: 1,
-    ...typography.caption,
-    color: colors.black,
-  },
-  modalSection: {
-    gap: spacing.sm,
-  },
-  modalSectionTitle: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: colors.darkGreen,
-  },
-  modalReasonRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: spacing.sm,
-  },
-  modalReasonText: {
-    flex: 1,
-    ...typography.caption,
-    color: colors.black,
-    lineHeight: 19,
-  },
-  modalWarningSection: {
-    gap: spacing.xs,
-    backgroundColor: `${colors.warning}18`,
-    borderRadius: 12,
-    padding: spacing.md,
-  },
-  modalWarningText: {
-    ...typography.caption,
-    color: '#E65100',
-    lineHeight: 19,
-  },
-  modalNutritionRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-  },
-  modalNutritionPill: {
-    minWidth: 68,
-    backgroundColor: colors.lightGreen,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.md,
-    alignItems: 'center',
-  },
-  modalNutritionValue: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: colors.darkGreen,
-  },
-  modalNutritionLabel: {
-    fontSize: 10,
-    color: colors.gray,
-    marginTop: 2,
-  },
-  modalCloseButton: {
-    position: 'absolute',
-    top: spacing.sm,
-    right: spacing.sm,
-    width: 36,
-    height: 36,
-    borderRadius: borderRadius.full,
+  mealCard: {
     backgroundColor: colors.white,
+    borderRadius: borderRadius.lg,
+    padding: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.mediumGreen,
+  },
+  mealHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.sm,
+  },
+  mealLabelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  mealLabel: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: colors.black,
+  },
+  foodRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+  foodImage: {
+    width: 78,
+    height: 66,
+    borderRadius: borderRadius.md,
+    backgroundColor: colors.lightGray,
+  },
+  foodInfo: {
+    flex: 1,
+  },
+  foodName: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: colors.black,
+  },
+  foodMeta: {
+    ...typography.caption,
+    color: colors.gray,
+    marginTop: 3,
+  },
+  emptyMeal: {
+    minHeight: 64,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    borderColor: colors.mediumGreen,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    gap: spacing.sm,
+  },
+  emptyMealText: {
+    ...typography.caption,
+    color: colors.darkGreen,
+    fontWeight: '700',
   },
 });

@@ -12,6 +12,40 @@ import {
   HEALTH_CONDITION_LABELS,
 } from '../../types';
 
+export type MealSlot = 'breakfast' | 'lunch' | 'dinner';
+
+const MEAL_TARGETS: Record<MealSlot, {
+  calorieShare: number;
+  preferredCategories: Food['category'][];
+  cautionCategories: Food['category'][];
+  maxCalories: number;
+  maxSodium: number;
+  maxCarbs?: number;
+}> = {
+  breakfast: {
+    calorieShare: 0.25,
+    preferredCategories: ['PROTEIN', 'GRAIN', 'FRUIT', 'DAIRY', 'BEVERAGE'],
+    cautionCategories: ['SOUP', 'SWALLOW'],
+    maxCalories: 380,
+    maxSodium: 420,
+  },
+  lunch: {
+    calorieShare: 0.4,
+    preferredCategories: ['PROTEIN', 'GRAIN', 'SOUP', 'SWALLOW', 'VEGETABLE'],
+    cautionCategories: ['BEVERAGE'],
+    maxCalories: 620,
+    maxSodium: 650,
+  },
+  dinner: {
+    calorieShare: 0.3,
+    preferredCategories: ['PROTEIN', 'SOUP', 'VEGETABLE', 'FRUIT', 'BEVERAGE'],
+    cautionCategories: ['SWALLOW', 'GRAIN'],
+    maxCalories: 360,
+    maxSodium: 420,
+    maxCarbs: 30,
+  },
+};
+
 // ============================================================================
 // Core Recommendation Functions
 // ============================================================================
@@ -52,7 +86,7 @@ export function filterByConditions(
 /**
  * Calculate the recommendation score for a food item (0-100)
  */
-export function scoreFood(food: Food, profile: PatientProfile): number {
+export function scoreFood(food: Food, profile: PatientProfile, meal?: MealSlot): number {
   let score = 0;
   const conditions = profile.healthConditions;
 
@@ -135,8 +169,69 @@ export function scoreFood(food: Food, profile: PatientProfile): number {
   ).length;
   score -= cautionCount * 5;
 
+  if (meal) {
+    score += scoreMealFit(food, profile, meal);
+  }
+
   // Ensure score is within bounds
   return Math.max(0, Math.min(100, Math.round(score)));
+}
+
+function scoreMealFit(food: Food, profile: PatientProfile, meal: MealSlot): number {
+  const target = MEAL_TARGETS[meal];
+  const mealCalories = Math.max(180, profile.tdee * target.calorieShare);
+  const conditions = profile.healthConditions;
+  let score = 0;
+
+  if (target.preferredCategories.includes(food.category)) score += 12;
+  if (target.cautionCategories.includes(food.category)) score -= 12;
+
+  const calorieGap = Math.abs(food.nutrition.calories - mealCalories);
+  if (food.nutrition.calories <= target.maxCalories && calorieGap <= mealCalories * 0.55) {
+    score += 10;
+  } else if (food.nutrition.calories > target.maxCalories) {
+    score -= meal === 'lunch' ? 4 : 10;
+  }
+
+  if (food.nutrition.sodium <= target.maxSodium) score += 6;
+  else score -= 8;
+
+  if (meal === 'breakfast') {
+    if (food.nutrition.protein >= 7) score += 6;
+    if (food.nutrition.fiber >= 3) score += 5;
+    if (food.nutrition.sugar > 12) score -= 8;
+  }
+
+  if (meal === 'lunch') {
+    if (food.nutrition.protein >= 10) score += 6;
+    if (food.nutrition.fiber >= 3) score += 5;
+    if (['PROTEIN', 'SOUP', 'VEGETABLE'].includes(food.category)) score += 4;
+  }
+
+  if (meal === 'dinner') {
+    if (food.nutrition.calories <= 230) score += 7;
+    if (food.nutrition.carbohydrates <= (target.maxCarbs ?? 30)) score += 6;
+    else score -= 10;
+    if (food.nutrition.sodium <= 300) score += 4;
+  }
+
+  const hasDiabetes = conditions.includes('TYPE_1_DIABETES') ||
+    conditions.includes('TYPE_2_DIABETES');
+  if (hasDiabetes && food.nutrition.carbohydrates > 30 && meal !== 'lunch') {
+    score -= 8;
+  }
+
+  const hasHypertension = conditions.includes('HYPERTENSION');
+  if (hasHypertension && food.nutrition.sodium > target.maxSodium) {
+    score -= 8;
+  }
+
+  const hasObesity = conditions.includes('OBESITY');
+  if (hasObesity && food.nutrition.calories > target.maxCalories) {
+    score -= 8;
+  }
+
+  return score;
 }
 
 /**
@@ -250,11 +345,12 @@ export function generateWarnings(food: Food, profile: PatientProfile): string[] 
  */
 export function createRecommendation(
   food: Food,
-  profile: PatientProfile
+  profile: PatientProfile,
+  meal?: MealSlot
 ): RecommendedFood {
   return {
     food,
-    score: scoreFood(food, profile),
+    score: scoreFood(food, profile, meal),
     reasons: generateReasons(food, profile),
     warnings: generateWarnings(food, profile),
   };
@@ -294,6 +390,48 @@ export function getRecommendationsByCategory(
 
   return categoryFoods.map((food) => createRecommendation(food, profile))
     .sort((a, b) => b.score - a.score);
+}
+
+export function getRecommendationsForMeal(
+  profile: PatientProfile,
+  meal: MealSlot,
+  limit: number = 12
+): RecommendedFood[] {
+  const target = MEAL_TARGETS[meal];
+  const safeFoods = filterByConditions(nigerianFoods, profile.healthConditions);
+  const mealFoods = safeFoods.filter((food) => {
+    if (food.nutrition.calories > target.maxCalories + 180) return false;
+    if (food.nutrition.sodium > target.maxSodium + 350) return false;
+    if (meal === 'dinner' && food.nutrition.carbohydrates > 45) return false;
+    return target.preferredCategories.includes(food.category) ||
+      !target.cautionCategories.includes(food.category);
+  });
+
+  return mealFoods
+    .map((food) => createRecommendation(food, profile, meal))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit);
+}
+
+export function getMealNote(recommendation: RecommendedFood, meal: MealSlot): string {
+  const { food } = recommendation;
+  const hasCarbs = food.nutrition.carbohydrates >= 20;
+
+  if (meal === 'breakfast') {
+    if (food.category === 'FRUIT') return 'Pair with protein or yogurt to slow blood sugar rise.';
+    if (food.category === 'GRAIN') return 'Use a modest bowl and add protein where possible.';
+    return 'Strong morning choice. Keep added sugar and salt low.';
+  }
+
+  if (meal === 'lunch') {
+    if (food.category === 'SWALLOW' || hasCarbs) {
+      return 'Use a controlled portion and balance the plate with vegetables and lean protein.';
+    }
+    return 'Works well as a lunch protein, soup, or vegetable side.';
+  }
+
+  if (hasCarbs) return 'Keep dinner portion small and pair with vegetables.';
+  return 'Light dinner fit. Prefer low salt preparation.';
 }
 
 /**
