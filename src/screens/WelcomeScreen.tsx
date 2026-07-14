@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.lightGreen,
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: spacing.md,
   },
   iconContainer: {
     flex: 1,
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
     ...typography.body,
     color: colors.gray,
     textAlign: 'center',
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: spacing.md,
   },
   footer: {
     paddingVertical: spacing.lg,

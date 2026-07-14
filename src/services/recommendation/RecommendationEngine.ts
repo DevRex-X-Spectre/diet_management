@@ -46,6 +46,111 @@ const MEAL_TARGETS: Record<MealSlot, {
   },
 };
 
+const MEAL_FOOD_FIT: Record<MealSlot, {
+  primary: string[];
+  secondary: string[];
+  avoid: string[];
+}> = {
+  breakfast: {
+    primary: [
+      'oats',
+      'boiled-eggs',
+      'moi-moi',
+      'boiled-beans',
+      'egg-sauce',
+      'greek-yogurt',
+      'plain-yogurt',
+      'low-fat-milk',
+      'whole-wheat-bread',
+      'apple',
+      'orange',
+      'avocado',
+      'unsweetened-tea',
+      'okpa',
+    ],
+    secondary: ['akara', 'banana', 'pawpaw', 'groundnuts', 'mixed-nuts', 'tiger-nuts'],
+    avoid: [
+      'amala',
+      'eba',
+      'pounded-yam',
+      'plantain-swallow',
+      'oat-swallow',
+      'egusi-soup',
+      'ogbono-soup',
+      'banga-soup',
+      'groundnut-soup',
+      'edikang-ikong',
+    ],
+  },
+  lunch: {
+    primary: [
+      'grilled-tilapia',
+      'grilled-chicken',
+      'grilled-turkey',
+      'fish-stew',
+      'brown-rice',
+      'ofada-rice',
+      'boiled-beans',
+      'water-yam',
+      'unripe-plantain',
+      'oat-swallow',
+      'plantain-swallow',
+      'amala',
+      'okra-soup',
+      'vegetable-soup',
+      'edikang-ikong',
+      'efo-riro',
+      'ugu-leaves',
+    ],
+    secondary: [
+      'moi-moi',
+      'catfish-pepper-soup',
+      'egusi-soup',
+      'ogbono-soup',
+      'garden-eggs',
+      'cucumber',
+      'carrots',
+    ],
+    avoid: ['low-fat-milk', 'greek-yogurt', 'plain-yogurt', 'unsweetened-tea', 'apple', 'orange', 'banana'],
+  },
+  dinner: {
+    primary: [
+      'catfish-pepper-soup',
+      'pepper-soup-light',
+      'fish-stew',
+      'okra-soup',
+      'vegetable-soup',
+      'efo-riro',
+      'okra',
+      'cucumber',
+      'garden-eggs',
+      'waterleaf',
+      'soko',
+      'grilled-tilapia',
+      'grilled-chicken',
+      'plain-yogurt',
+      'avocado',
+    ],
+    secondary: ['boiled-eggs', 'moi-moi', 'boiled-beans', 'orange', 'unsweetened-tea'],
+    avoid: [
+      'brown-rice',
+      'ofada-rice',
+      'agege-bread',
+      'whole-wheat-bread',
+      'semovita',
+      'amala',
+      'eba',
+      'pounded-yam',
+      'plantain-swallow',
+      'oat-swallow',
+      'akara',
+      'okpa',
+      'groundnuts',
+      'mixed-nuts',
+    ],
+  },
+};
+
 // ============================================================================
 // Core Recommendation Functions
 // ============================================================================
@@ -179,9 +284,14 @@ export function scoreFood(food: Food, profile: PatientProfile, meal?: MealSlot):
 
 function scoreMealFit(food: Food, profile: PatientProfile, meal: MealSlot): number {
   const target = MEAL_TARGETS[meal];
+  const mealFit = MEAL_FOOD_FIT[meal];
   const mealCalories = Math.max(180, profile.tdee * target.calorieShare);
   const conditions = profile.healthConditions;
   let score = 0;
+
+  if (mealFit.primary.includes(food.id)) score += 24;
+  else if (mealFit.secondary.includes(food.id)) score += 12;
+  else if (mealFit.avoid.includes(food.id)) score -= 36;
 
   if (target.preferredCategories.includes(food.category)) score += 12;
   if (target.cautionCategories.includes(food.category)) score -= 12;
@@ -232,6 +342,46 @@ function scoreMealFit(food: Food, profile: PatientProfile, meal: MealSlot): numb
   }
 
   return score;
+}
+
+function fitsMealSlot(food: Food, meal: MealSlot): boolean {
+  const target = MEAL_TARGETS[meal];
+  const fit = MEAL_FOOD_FIT[meal];
+
+  if (fit.avoid.includes(food.id)) return false;
+  if (fit.primary.includes(food.id) || fit.secondary.includes(food.id)) return true;
+  if (target.cautionCategories.includes(food.category)) return false;
+
+  if (meal === 'breakfast') {
+    return ['PROTEIN', 'GRAIN', 'FRUIT', 'DAIRY', 'BEVERAGE'].includes(food.category) &&
+      food.nutrition.calories <= target.maxCalories;
+  }
+
+  if (meal === 'lunch') {
+    return ['PROTEIN', 'GRAIN', 'SOUP', 'SWALLOW', 'VEGETABLE'].includes(food.category);
+  }
+
+  return ['PROTEIN', 'SOUP', 'VEGETABLE', 'FRUIT', 'DAIRY', 'BEVERAGE'].includes(food.category) &&
+    food.nutrition.calories <= target.maxCalories &&
+    food.nutrition.carbohydrates <= (target.maxCarbs ?? 30);
+}
+
+function getMealFitRank(food: Food, meal: MealSlot): number {
+  const fit = MEAL_FOOD_FIT[meal];
+  if (fit.primary.includes(food.id)) return 0;
+  if (fit.secondary.includes(food.id)) return 1;
+  return 2;
+}
+
+function getMealFitOrder(food: Food, meal: MealSlot): number {
+  const fit = MEAL_FOOD_FIT[meal];
+  const primaryIndex = fit.primary.indexOf(food.id);
+  if (primaryIndex >= 0) return primaryIndex;
+
+  const secondaryIndex = fit.secondary.indexOf(food.id);
+  if (secondaryIndex >= 0) return fit.primary.length + secondaryIndex;
+
+  return fit.primary.length + fit.secondary.length + 1;
 }
 
 /**
@@ -403,13 +553,20 @@ export function getRecommendationsForMeal(
     if (food.nutrition.calories > target.maxCalories + 180) return false;
     if (food.nutrition.sodium > target.maxSodium + 350) return false;
     if (meal === 'dinner' && food.nutrition.carbohydrates > 45) return false;
-    return target.preferredCategories.includes(food.category) ||
-      !target.cautionCategories.includes(food.category);
+    return fitsMealSlot(food, meal);
   });
 
   return mealFoods
     .map((food) => createRecommendation(food, profile, meal))
-    .sort((a, b) => b.score - a.score)
+    .sort((a, b) => {
+      const rankDiff = getMealFitRank(a.food, meal) - getMealFitRank(b.food, meal);
+      if (rankDiff !== 0) return rankDiff;
+
+      const orderDiff = getMealFitOrder(a.food, meal) - getMealFitOrder(b.food, meal);
+      if (orderDiff !== 0) return orderDiff;
+
+      return b.score - a.score;
+    })
     .slice(0, limit);
 }
 

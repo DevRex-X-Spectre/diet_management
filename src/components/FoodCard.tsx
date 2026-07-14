@@ -1,7 +1,6 @@
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import { Card } from './Card';
-import { ScoreBadge } from './ScoreBadge';
 import { colors, spacing, typography } from '../theme';
 import { foodImages } from '../data/foodImages';
 import type { RecommendedFood } from '../types/food';
@@ -16,7 +15,7 @@ interface FoodCardProps {
  * Compact food card for the recommendation grid.
  */
 export function FoodCard({ recommendation, onPress, mealNote }: FoodCardProps) {
-  const { food, score } = recommendation;
+  const { food } = recommendation;
 
   return (
     <Card onPress={onPress} style={styles.card}>
@@ -36,18 +35,19 @@ export function FoodCard({ recommendation, onPress, mealNote }: FoodCardProps) {
             {food.servingSize}
           </Text>
         </View>
-        <ScoreBadge score={score} size="small" />
       </View>
 
-      {mealNote && (
-        <Text style={styles.mealNote} numberOfLines={3}>
-          {mealNote}
-        </Text>
-      )}
+      <View style={styles.body}>
+        {mealNote && (
+          <Text style={styles.mealNote} numberOfLines={3}>
+            {mealNote}
+          </Text>
+        )}
 
-      <Text style={styles.whyText} numberOfLines={1}>
-        Tap for health details
-      </Text>
+        <Text style={styles.whyText} numberOfLines={1}>
+          Tap for health details
+        </Text>
+      </View>
     </Card>
   );
 }
@@ -56,50 +56,58 @@ const styles = StyleSheet.create({
   card: {
     padding: 0,
     overflow: 'hidden',
+    minHeight: 252,
   },
   image: {
     width: '100%',
-    height: 108,
+    height: 116,
     backgroundColor: colors.lightGray,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
     paddingHorizontal: spacing.sm,
-    paddingTop: spacing.sm,
-    paddingBottom: spacing.xs,
+    paddingTop: 10,
+    paddingBottom: 4,
   },
   info: {
     flex: 1,
-    marginRight: spacing.xs,
   },
   name: {
-    fontSize: 14,
-    fontWeight: '600',
+    ...typography.caption,
     color: colors.black,
-    marginBottom: 2,
+    fontWeight: '800',
+    lineHeight: 17,
+    marginBottom: 3,
   },
   localName: {
-    fontSize: 12,
-    color: colors.gray,
+    fontSize: 11,
+    color: colors.black,
+    opacity: 0.58,
     fontStyle: 'normal',
-    marginBottom: 2,
+    lineHeight: 14,
+    marginBottom: 3,
   },
   serving: {
     fontSize: 12,
     color: colors.gray,
+    lineHeight: 15,
+  },
+  body: {
+    flex: 1,
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.sm,
+    paddingBottom: spacing.sm,
+    gap: spacing.xs,
   },
   whyText: {
     fontSize: 12,
     color: colors.darkGreen,
-    fontWeight: '600',
-    paddingHorizontal: spacing.sm,
-    paddingBottom: spacing.sm,
+    fontWeight: '800',
+    lineHeight: 15,
   },
   mealNote: {
     ...typography.caption,
+    fontSize: 12,
     color: colors.gray,
-    paddingHorizontal: spacing.sm,
-    paddingBottom: spacing.xs,
+    lineHeight: 16,
   },
 });

@@ -1,7 +1,7 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -16,10 +16,7 @@ import { AppBottomNav } from '../components/AppBottomNav';
 import { AppTopNav } from '../components/AppTopNav';
 import { foodImages } from '../data/foodImages';
 import { getFoodById } from '../data/nigerianFoods';
-import {
-  getRecommendationForFood,
-  MealSlot,
-} from '../services/recommendation/RecommendationEngine';
+import { MealSlot } from '../services/recommendation/RecommendationEngine';
 import {
   loadProfile,
   loadWeeklyMealPlan,
@@ -65,24 +62,6 @@ export function HomeScreen() {
     loadData();
     return unsubscribe;
   }, [navigation]);
-
-  const patientProfile = useMemo(() => {
-    if (!profile) return null;
-    return {
-      id: profile.id,
-      email: profile.email,
-      age: profile.age,
-      gender: profile.gender,
-      heightCm: profile.heightCm,
-      weightKg: profile.weightKg,
-      activityLevel: profile.activityLevel,
-      healthConditions: profile.healthConditions,
-      bmi: profile.bmi,
-      bmiCategory: profile.bmiCategory as any,
-      bmr: profile.bmr,
-      tdee: profile.tdee,
-    };
-  }, [profile]);
 
   const loadData = async () => {
     try {
@@ -206,10 +185,6 @@ export function HomeScreen() {
           {MEALS.map((meal) => {
             const foodId = plan.days[selectedDay][meal].foodId;
             const food = foodId ? getFoodById(foodId) : undefined;
-            const recommendation = foodId && patientProfile
-              ? getRecommendationForFood(foodId, patientProfile)
-              : null;
-
             return (
               <Pressable
                 key={meal}
@@ -231,7 +206,6 @@ export function HomeScreen() {
                       <Text style={styles.foodName}>{food.name}</Text>
                       <Text style={styles.foodMeta}>
                         {food.servingSize} • {food.nutrition.calories} cal
-                        {recommendation ? ` • Score ${recommendation.score}` : ''}
                       </Text>
                     </View>
                   </View>
@@ -279,7 +253,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.lightGreen,
   },
   scrollContent: {
-    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.sm,
+    paddingHorizontal: spacing.md,
     paddingBottom: spacing.xxl,
   },
   loadingContainer: {

@@ -57,7 +57,7 @@ export function AppBottomNav({ activeRoute }: AppBottomNavProps) {
 
 const styles = StyleSheet.create({
   wrap: {
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: spacing.md,
     paddingTop: spacing.sm,
     paddingBottom: spacing.sm,
     backgroundColor: colors.lightGreen,

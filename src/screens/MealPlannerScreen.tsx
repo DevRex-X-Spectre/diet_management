@@ -243,7 +243,7 @@ function MealSlotCard({
           <View style={styles.scheduledInfo}>
             <Text style={styles.scheduledName}>{food.name}</Text>
             <Text style={styles.scheduledMeta}>
-              {food.servingSize} • {food.nutrition.calories} cal • Score {recommendation.score}
+              {food.servingSize} • {food.nutrition.calories} cal
             </Text>
           </View>
         </View>
@@ -301,7 +301,7 @@ function MealSelectorModal({
                 <View style={styles.optionInfo}>
                   <Text style={styles.optionName}>{rec.food.name}</Text>
                   <Text style={styles.optionMeta}>
-                    {rec.food.nutrition.calories} cal • {rec.food.nutrition.protein}g protein • Score {rec.score}
+                    {rec.food.nutrition.calories} cal • {rec.food.nutrition.protein}g protein
                   </Text>
                 </View>
                 <MaterialCommunityIcons name="chevron-right" size={22} color={colors.gray} />
@@ -320,7 +320,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.lightGreen,
   },
   scrollContent: {
-    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.sm,
+    paddingHorizontal: spacing.md,
     paddingBottom: spacing.xxl,
   },
   loadingContainer: {
@@ -511,7 +512,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: spacing.md,
     paddingBottom: spacing.md,
   },
   selectorEyebrow: {
@@ -532,7 +533,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.lightGreen,
   },
   selectorList: {
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: spacing.md,
     paddingBottom: spacing.xl,
     gap: spacing.sm,
   },

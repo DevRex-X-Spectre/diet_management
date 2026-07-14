@@ -283,7 +283,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.lightGreen,
   },
   scrollContent: {
-    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.sm,
+    paddingHorizontal: spacing.md,
     paddingBottom: spacing.xxl,
   },
   loadingContainer: {

@@ -17,7 +17,6 @@ import { FoodDetailModal } from '../components/FoodDetailModal';
 import {
   getMealNote,
   getRecommendationsForMeal,
-  getTopRecommendations,
   MealSlot,
 } from '../services/recommendation/RecommendationEngine';
 import { loadProfile, StoredProfile } from '../services/storage';
@@ -46,8 +45,8 @@ export function RecommendationsScreen() {
   const [loading, setLoading] = useState(true);
 
   const cardWidth = width >= 720
-    ? (width - spacing.lg * 2 - spacing.md * 2) / 3
-    : (width - spacing.lg * 2 - spacing.md) / 2;
+    ? (width - spacing.md * 4) / 3
+    : (width - spacing.md * 3) / 2;
 
   useEffect(() => {
     loadData(selectedMeal);
@@ -58,24 +57,37 @@ export function RecommendationsScreen() {
       const savedProfile = await loadProfile();
       setProfile(savedProfile);
 
-      if (savedProfile) {
-        const patientProfile = {
-          id: savedProfile.id,
-          email: savedProfile.email,
-          age: savedProfile.age,
-          gender: savedProfile.gender,
-          heightCm: savedProfile.heightCm,
-          weightKg: savedProfile.weightKg,
-          activityLevel: savedProfile.activityLevel,
-          healthConditions: savedProfile.healthConditions,
-          bmi: savedProfile.bmi,
-          bmiCategory: savedProfile.bmiCategory as any,
-          bmr: savedProfile.bmr,
-          tdee: savedProfile.tdee,
-        };
+      const patientProfile = savedProfile
+        ? {
+            id: savedProfile.id,
+            email: savedProfile.email,
+            age: savedProfile.age,
+            gender: savedProfile.gender,
+            heightCm: savedProfile.heightCm,
+            weightKg: savedProfile.weightKg,
+            activityLevel: savedProfile.activityLevel,
+            healthConditions: savedProfile.healthConditions,
+            bmi: savedProfile.bmi,
+            bmiCategory: savedProfile.bmiCategory as any,
+            bmr: savedProfile.bmr,
+            tdee: savedProfile.tdee,
+          }
+        : {
+            id: 'guest',
+            email: '',
+            age: 30,
+            gender: 'MALE' as const,
+            heightCm: 170,
+            weightKg: 70,
+            activityLevel: 'MODERATE' as const,
+            healthConditions: [],
+            bmi: 24,
+            bmiCategory: 'NORMAL' as any,
+            bmr: 1600,
+            tdee: 2000,
+          };
 
-        setRecommendations(getRecommendationsForMeal(patientProfile, meal, 18));
-      }
+      setRecommendations(getRecommendationsForMeal(patientProfile, meal, 18));
     } catch (error) {
       console.error('Failed to load recommendations:', error);
     } finally {
@@ -137,20 +149,7 @@ export function RecommendationsScreen() {
         </View>
 
         <View style={styles.grid}>
-          {(recommendations.length > 0 ? recommendations : getTopRecommendations({
-            id: profile?.id ?? 'guest',
-            email: profile?.email ?? '',
-            age: profile?.age ?? 30,
-            gender: profile?.gender ?? 'MALE',
-            heightCm: profile?.heightCm ?? 170,
-            weightKg: profile?.weightKg ?? 70,
-            activityLevel: profile?.activityLevel ?? 'MODERATE',
-            healthConditions: profile?.healthConditions ?? [],
-            bmi: profile?.bmi ?? 24,
-            bmiCategory: profile?.bmiCategory as any,
-            bmr: profile?.bmr ?? 1600,
-            tdee: profile?.tdee ?? 2000,
-          }, 10)).map((rec) => (
+          {recommendations.map((rec) => (
             <View key={rec.food.id} style={[styles.gridItem, { width: cardWidth }]}>
               <FoodCard
                 recommendation={rec}
@@ -178,7 +177,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.lightGreen,
   },
   scrollContent: {
-    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.sm,
+    paddingHorizontal: spacing.md,
     paddingBottom: spacing.xxl,
   },
   loadingContainer: {
